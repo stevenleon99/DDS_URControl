@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!-- Copyright 2019 Covidien LP -->
+<!-- All Rights Reserved. The information contained herein is confidential -->
+<!-- property of Covidien LP. The use, copying, transfer or disclosure of such -->
+<!-- information is prohibited except by express written agreement with Covidien LP. -->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="@CONNEXTDDS_RESOURCE_QOS_PROFILES_SCHEMA_DIR@/rti_dds_qos_profiles.xsd"
+    version="@CONNEXTDDS_FOUND_VERSION@">
+
+    <!-- This file defines the domain participant used by the SCDC when communicating with the SMC. -->
+
+    <participant_library name="ScdcSmcParticipantLibrary">
+    
+        <!-- Non-Realtime SMC domain participant -->
+        <domain_participant name="ScdcSmcNonRealtimeParticipant" domain_id="@SMC_NONREALTIME_DOMAIN_ID@">
+
+            <!-- Topics using keep last reliable QoS profile -->
+
+            <!-- GuiEvent, published by SCDC  -->
+            <register_type name="GuiEvent" kind="userGenerated"></register_type>
+            <topic register_type_ref="GuiEvent" name="SC_GUI_IF/GuiEvent"></topic>
+            <data_writer topic_ref="SC_GUI_IF/GuiEvent" name="ScidGuiEventWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"></datawriter_qos>
+            </data_writer>
+
+            <!-- ErgonomicLevelCommand, published by SCDC -->
+            <register_type name="SmcErgonomicLevelCommand" kind="userGenerated"></register_type>
+            <topic register_type_ref="SmcErgonomicLevelCommand" name="SC_GUI_IF/ErgonomicLevel/Command"></topic>
+            <data_writer topic_ref="SC_GUI_IF/ErgonomicLevel/Command" name="SmcErgonomicLevelCommandWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"></datawriter_qos>
+            </data_writer>
+
+            <!-- SmcCalibrationStatus, received by SCDC -->
+            <register_type name="SmcCalibrationStatus" kind="userGenerated"></register_type>
+            <topic register_type_ref="SmcCalibrationStatus" name="SC_GUI_IF/SmcCalibrationStatus"></topic>
+            <data_reader topic_ref="SC_GUI_IF/SmcCalibrationStatus" name="SmcCalibrationStatusReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"></datareader_qos>
+            </data_reader>
+
+            <!-- ErgonomicLevelActual, received by SCDC -->
+            <register_type name="SmcErgonomicLevelActual" kind="userGenerated"></register_type>
+            <topic register_type_ref="SmcErgonomicLevelActual" name="SC_GUI_IF/ErgonomicLevel/Actual"></topic>
+            <data_reader topic_ref="SC_GUI_IF/ErgonomicLevel/Actual" name="SmcErgonomicLevelActualReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"></datareader_qos>
+            </data_reader>
+
+            <!-- HardwareConfigurationControl  received by SCDC -->
+            <register_type name="SmcHardwareConfigurationControl" kind="userGenerated"></register_type>
+            <topic register_type_ref="SmcHardwareConfigurationControl"
+                   name="SMC_MSC_IF/HardwareConfigurationControl"></topic>
+            <data_reader topic_ref="SMC_MSC_IF/HardwareConfigurationControl"
+                         name="SmcHardwareConfigurationControlReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"></datareader_qos>
+            </data_reader>
+			
+            <!-- DeactivationRequest, received by SCDC (the only value sent to SCDC is SWITCH_CONTROL_ID_SOFT_POWER)  -->
+            <register_type name="SwitchControls" kind="userGenerated"></register_type>
+            <topic register_type_ref="SwitchControls" name="SC_GUI_IF/DeactivationRequest"></topic>
+            <data_reader topic_ref="SC_GUI_IF/DeactivationRequest" name="DeactivationRequestReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"></datareader_qos>
+            </data_reader>
+
+           <!-- Temporary add participant QoS setting until GUI is migrated to new 
+            communication library. This file will be obsolete after migration -->
+            <participant_qos base_name="EinsteinQoSProfileLibrary::EinsteinDomainParticipantQoS">
+            </participant_qos>
+
+        </domain_participant>
+
+    </participant_library>
+</dds>
+

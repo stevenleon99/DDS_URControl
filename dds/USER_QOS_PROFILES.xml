@@ -27,7 +27,7 @@
         QoS Library containing the QoS profile used in this example.
         A QoS library is a named set of QoS profiles.
     -->
-    <qos_library name="URController_Library">
+    <qos_library name="UR5Controller_Library">
 
         <!-- 
             QoS profile used to configure reliable communication between the
@@ -41,7 +41,7 @@
             These QoS profiles will be used as the default, as long as this
             file is in the working directory when running the example.
         -->
-        <qos_profile name="URController_Profile" 
+        <qos_profile name="UR5Controller_Profile" 
                      base_name="BuiltinQosLib::Generic.StrictReliable"
                      is_default_qos="true">
 

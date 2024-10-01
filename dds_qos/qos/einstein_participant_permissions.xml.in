@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file allows the holder of the matching Identity Certificate to:
+  - publish on any topic
+  - subscribe to any topic
+  - within all DDS Domains
+-->
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://www.omg.org/spec/DDS-SECURITY/20170901/omg_shared_ca_permissions.xsd">
+  <permissions>
+    <!-- Grants for DomainParticipant(s) will be grouped under this tag -->
+    <grant name="Permissions_Document">
+      <!-- NOTE: subject_name must match the Identity Certificate -->
+      <subject_name>C = US, ST = Massachusetts, L = Boston, O = Medtronic plc, OU = Development, CN = hugocommon</subject_name>
+      <!-- Validity dates for this grant -->
+      <validity>
+        <!-- Format is CCYY-MM-DDThh:mm:ss[Z|(+|-)hh:mm] in GMT -->
+        <not_before>@CERTIFICATE_VALIDITY_NOT_BEFORE@</not_before>
+        <not_after>@CERTIFICATE_VALIDITY_NOT_AFTER@</not_after>
+      </validity>
+      <!-- Allow all participants to publish and subscribe to all topics -->
+      <allow_rule>
+        <domains>
+          <id>@SMC_REALTIME_DOMAIN_ID@</id>
+          <id>@SMC_NONREALTIME_DOMAIN_ID@</id>
+          <id>@CORE_REALTIME_DOMAIN_ID@</id>
+          <id>@CORE_NONREALTIME_DOMAIN_ID@</id>
+          <id>@SRA_1_REALTIME_DOMAIN_ID@</id>
+          <id>@SRA_1_NONREALTIME_DOMAIN_ID@</id>
+          <id>@SRA_2_REALTIME_DOMAIN_ID@</id>
+          <id>@SRA_2_NONREALTIME_DOMAIN_ID@</id>
+          <id>@SRA_3_REALTIME_DOMAIN_ID@</id>
+          <id>@SRA_3_NONREALTIME_DOMAIN_ID@</id>
+          <id>@SRA_4_REALTIME_DOMAIN_ID@</id>
+          <id>@SRA_4_NONREALTIME_DOMAIN_ID@</id>
+          <id>@ORION_RELAY_REALTIME_DOMAIN_ID@</id>
+          <id>@ORION_RELAY_NONREALTIME_DOMAIN_ID@</id>
+          <id>@MSC_GUI_REALTIME_DOMAIN_ID@</id>
+          <id>@SAFETY_DOMAIN_ID@</id>
+          <id>@CORE_NONREALTIME_INSECURE_DOMAIN_ID@</id>
+        </domains>
+      </allow_rule>
+      <!-- This participants will be denied to publish or subscribe all topics -->
+      <default>DENY</default>
+    </grant>
+  </permissions>
+</dds>

@@ -431,7 +431,7 @@ message(STATUS "Example QoS filename: ${_EXAMPLE_QOS_FILENAME}")
             COMMAND
                 ${CMAKE_COMMAND} -E copy_if_different
                     ${qos_file}
-                    "${CMAKE_CURRENT_BINARY_DIR}"
+                    ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Copying ${user_qos_profile_name}"
             DEPENDS
                 ${qos_file}

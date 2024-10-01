@@ -1,0 +1,916 @@
+<?xml version="1.0"?>
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="@CONNEXTDDS_RESOURCE_QOS_PROFILES_SCHEMA_DIR@/rti_dds_qos_profiles.xsd"
+     version="@CONNEXTDDS_FOUND_VERSION@">
+
+    <qos_library name="EinsteinQoSProfileLibrary">
+
+        <qos_profile name="EinsteinSecurityParticipantSnippet">
+            <base_name>
+                <element>BuiltinQosSnippetLib::Feature.Security.Enable</element>
+            </base_name>
+            <participant_qos name="EinsteinSecurityParticipantQos">
+                <property>
+                    <value>
+                        <!-- Logging -->
+                        <!-- By default, security logging is written to Connext DDS's builtin logging system.
+                             Security logging may be written to a separate security logging file or distributed
+                             over DDS. If the separate security logging file or distribution over DDS are enabled,
+                             then security logging is NOT written to Connext DDS's builtin logging system. -->
+                        <!--
+                        Verbosity can be set one of the following levels in order of increasing verbosity:
+                            - SILENT
+                            - EMERGENCY
+                            - ALERT
+                            - CRITICAL
+                            - ERROR (default)
+                            - WARNING
+                            - NOTICE
+                            - INFORMATIONAL
+                            - DEBUG
+                        -->
+                        <element>
+                            <name>com.rti.serv.secure.logging.verbosity</name>
+                            <value>@DDS_SECURE_LOG_LEVEL@</value>
+                        </element>
+
+                        <!-- Uncomment to enable a separate security logging file -->
+                        <element>
+                            <name>com.rti.serv.secure.logging.log_file</name>
+                            <value>@DDS_SECURE_LOG_PATH@@DDS_SECURE_LOG_FILE@</value>
+                        </element>
+
+                        <!-- Shared certificates and files -->
+                        <!-- Identity CA identity certificate -->
+                        <element>
+                            <name>com.rti.serv.secure.dds.sec.auth.identity_ca</name>
+                            <value>@SECURITY_PREFIX@@SECURITY_HUGO_CA_CERT_LOCATION@@HUGO_CA_CERT@</value>
+                        </element>
+                        <!-- Permissions CA identity certificate -->
+                        <element>
+                            <name>com.rti.serv.secure.dds.sec.access.permissions_ca</name>
+                            <value>@SECURITY_PREFIX@@SECURITY_RESOURCE_LOCATION@@PERMISSIONS_CA_CERT@</value>
+                        </element>
+                        <!-- Domain Governance file, signed by Permissions CA -->
+                        <element>
+                            <name>com.rti.serv.secure.dds.sec.access.governance</name>
+                            <value>@SECURITY_PREFIX@@SECURITY_RESOURCE_LOCATION@@GOVERNANCE_FILE_SIGNED@</value>
+                        </element>
+                        <!-- Identity certificate -->
+                        <element>
+                            <name>com.rti.serv.secure.dds.sec.auth.identity_certificate</name>
+                            <value>@SECURITY_PREFIX@@SECURITY_HUGO_ID_CERT_LOCATION@@HUGO_ID_CERT@</value>
+                        </element>
+                        <!-- Private key -->
+                        <element>
+                            <name>com.rti.serv.secure.dds.sec.auth.private_key</name>
+                            <value>@SECURITY_PREFIX@@SECURITY_HUGO_ID_CERT_LOCATION@@HUGO_ID_PRIV@</value>
+                        </element>
+                        <!-- Permissions file, signed by Permissions CA -->
+                        <element>
+                            <name>com.rti.serv.secure.dds.sec.access.permissions</name>
+                            <value>@SECURITY_PREFIX@@SECURITY_RESOURCE_LOCATION@@PERMISSION_FILE_SIGNED@</value>
+                        </element>
+                        <!-- Certificate Revocation List (uncomment to enable)
+                        <element>
+                            <name>com.rti.serv.secure.authentication.crl_file</name>
+                            <value>file:/einstein/application/resource/ca.crl</value>
+                        </element>
+                        -->
+                        <element>
+                            <name>com.rti.serv.secure.library</name>
+                            <value>nddssecurity</value>
+                        </element>
+                        <element>
+                            <name>com.rti.serv.secure.create_function</name>
+                            <value>RTI_Security_PluginSuite_create</value>
+                        </element>
+                        <!-- Needed to use WITH_ORIGIN_AUTHENTICATION -->
+                        <element>
+                            <name>com.rti.serv.secure.cryptography.max_receiver_specific_macs</name>
+                            <value>20</value>
+                        </element>
+                        <element>
+                            <name>com.rti.serv.load_plugin</name>
+                            <value>com.rti.serv.secure</value>
+                        </element>
+                    </value>
+                </property>
+            </participant_qos>
+        </qos_profile>
+
+        <!-- This profile is used for all DomainParticipants created by the comms library.
+             To alter DomainParticipantQoS globally, make changes here. To make a local
+             change to a specific process, like adjusting thread priorities, use one of
+             the methods on DdsDomainParticipantBuilder early during process
+             initialization. All other profiles are for DataReaders/DataWriters only, and
+             should not be used for participant_qos.
+         -->
+        <qos_profile name="EinsteinDomainParticipantQoS">
+            <base_name>
+                <element>EinsteinSecurityParticipantSnippet</element>
+            </base_name>
+
+            <participant_qos>
+
+                <!-- A reader/writer/subscriber/publisher/topic is a entity in the Dds language .
+                Topics are owned by the Participant and the Readers and Writers are entities owned by Subscribers and Publishers
+                By default all the Dds Data readers and writers specified in a Domain participant via xml file are created as soon as the Domain Participant is created
+                This has implications if there are extra readers/writers in the xml file than the application intends to use causing an increase in network traffic load
+                By disabling created entities, we can enable them only when we lookup the datareader/datawriter by name.
+                The entity configuration is enabled here to allow Topics to be enabled by default as Publishers and subscribers cannot be enabled without having all topics enabled
+                In the default subscriber_qos and publisher_qos, the entities will be disabled by default to be enabled programmatically when the lookup_* is called .
+                This protects against user error during xml creation -->
+
+                <entity_factory>
+                    <autoenable_created_entities>true</autoenable_created_entities>
+                </entity_factory>
+
+                <!-- All DDS Related traffic will flow through the 192.168.0.x subnet regardless of what domain they are in -->
+                <property>
+                    <value>
+
+                    <!-- This can be used to turn on RTI Monitoring -->
+                        <!--element>
+                            <name>rti.monitor.library</name>
+                            <value>rtimonitoring</value>
+                        </element>
+                        <element>
+                            <name>rti.monitor.create_function</name>
+                            <value>RTIDefaultMonitor_create</value>
+                        </element-->
+
+                        <element>
+                            <!-- Restrict traffic to the NRT network with IP Subnet 192.168.0.* .
+                            The interface 192.168.70.* & 192.168.99.* is for communication with the Task Simulator.
+                            The other interface 192.168.56.* is to allow communication on VMs for testing purposes
+                            (which VMs were these?).
+                            127.0.0.1 (loopback) allows automated unit tests running on Bamboo VMs etc. that don't
+                            have the above interfaces to talk to the same process/node using UDP.
+                            -->
+                            <name>dds.transport.UDPv4.builtin.parent.allow_interfaces_list</name>
+                            <value>192.168.0.*,192.168.70.*,192.168.80.*,192.168.99.*,192.168.56.*,127.0.0.1</value>
+                        </element>
+
+                        <element>
+                            <!-- This was added due to an issue on the sra where the RTI event thread blocks
+                            indefinitely due to an interaction with io-pkt which is not well understood. This will
+                            ideally prevent the indefinite blocking issue and is therefore being applied by default.
+                            A value of 0 represents non-blocking and a value of 1 represents blocking. -->
+                            <name>dds.transport.UDPv4.builtin.send_blocking</name>
+                            <value>0</value>
+                            <propagate>true</propagate>
+                        </element>
+
+                        <element>
+                            <!-- Prevent tracking of interfaces as a new thread is created per domain for this . -->
+                            <name>dds.transport.UDPv4.builtin.disable_interface_tracking</name>
+                            <value>1</value>
+                        </element>
+
+                        <element>
+                            <name> dds.clock.internal_clock </name>
+                            <value> monotonic </value>
+                        </element>
+
+                    </value>
+                </property>
+
+                <!-- Enable random GUID . This generates new IDs when nodes are restarted -->
+                <wire_protocol>
+                    <compute_crc>0</compute_crc>
+                    <check_crc>0</check_crc>
+                    <rtps_auto_id_kind>RTPS_AUTO_ID_FROM_UUID</rtps_auto_id_kind>
+                </wire_protocol>
+
+                <!-- Setting the attributes of the internal RTI Database -->
+                <database>
+                    <!-- The thread only performs cleanups so low priority is fine -->
+                    <thread>
+                        <priority>THREAD_PRIORITY_LOW</priority>
+                        <stack_size>THREAD_STACK_SIZE_DEFAULT</stack_size>
+                    </thread>
+                </database>
+
+                <!-- This dictates priorities of the receiving thread. This should be make higher to make message timing more consistent -->
+                <receiver_pool>
+                    <thread>
+                        <priority>@RTI_DDS_RECEIVER_POOL_THREAD_PRIORITY@</priority>
+                    </thread>
+
+                </receiver_pool>
+
+                <!-- Setting the Thread Priority of the Event Thread  -->
+                <event>
+                    <thread>
+                        <priority>
+                            @RTI_DDS_EVENT_THREAD_PRIORITY@
+                        </priority>
+                        <stack_size>THREAD_STACK_SIZE_DEFAULT</stack_size>
+                    </thread>
+                </event>
+
+                <discovery_config>
+                    <!-- No Broadcast on domain 0 True by default . Making it explicit here -->
+                    <ignore_default_domain_announcements>true</ignore_default_domain_announcements>
+                    <default_domain_announcement_period>
+                        <sec>DURATION_INFINITE_SEC</sec>
+                        <nanosec>DURATION_INFINITE_NSEC</nanosec>
+                    </default_domain_announcement_period>
+                    <initial_participant_announcements>3</initial_participant_announcements>
+                    <min_initial_participant_announcement_period>
+                        <sec>3</sec>
+                        <nanosec>0</nanosec>
+                    </min_initial_participant_announcement_period>
+                    <max_initial_participant_announcement_period>
+                        <sec>10</sec>
+                        <nanosec>0</nanosec>
+                    </max_initial_participant_announcement_period>
+                </discovery_config>
+
+                <resource_limits>
+                    <contentfilter_property_max_length>512</contentfilter_property_max_length>
+                    <!-- This disables the propagation of Information regarding the data type during discovery phase.
+                    This is done to reduce the traffic during discovery. The type information also including the strings
+                    that define the enums are sent across the wire causing the packets to exceed the default MTU of 1500 bytes
+                    in the network causing fragmentation in the network . The large packets are propagated multiple times during
+                    discovery for each node / domain participant causing jitters in the network .
+                    Since all applications register the data types during initialization, they are not impacted by disabling the
+                    type_object and type_code.
+                    Please note that the tools such as rtiadminconsole/rtiddsspy depend on dynamic inference of datatypes and may not work
+                    as expected. Please remove these options during testing/debugging.
+                     This is being disabled till alternative for test team can be explored -->
+                    <!-- <type_object_max_serialized_length>0</type_object_max_serialized_length>-->
+                    <!--<type_code_max_serialized_length>0</type_code_max_serialized_length>-->
+                    @TESTS_ONLY_PROPERTY@
+                </resource_limits>
+            </participant_qos>
+        </qos_profile>
+
+        <!-- Default QoS profile for readers ans writers, which some but not all profiles inherit from. -->
+        <qos_profile name="EinsteinDefaultQoS"
+                     is_default_qos="true">
+
+            <base_name>
+                <!-- The new communication library does not use this profile for participant QoS, so following should
+                     not be needed. But we include it as a fallback for old comms, as well as until we finish
+                     investigating client behavior on the SCDC where DDS secure was used even when the participant QoS
+                     was broken. (Add ticket # here!) -->
+                <element>EinsteinSecurityParticipantSnippet</element>
+                <element>BuiltinQosLibExp::Generic.KeepLastReliable.TransientLocal</element>
+            </base_name>
+
+            <datareader_qos>
+                <resource_limits>
+                    <!--We have decided to use Topic Names, rather than keyed topics. There should only ever be 1 instance.-->
+                    <max_instances>1</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>80</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+                <reliability>
+                    <acknowledgment_kind>APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE</acknowledgment_kind>
+                </reliability>
+            </datareader_qos>
+
+            <subscriber_qos>
+                <!-- Disable the entities under subscriber by default. This causes the readers to be created in a disabled state
+                and is not discovered by other applications. This will be enabled during lookup operation  -->
+                <entity_factory>
+                    <autoenable_created_entities>false</autoenable_created_entities>
+                </entity_factory>
+                <presentation>
+                    <access_scope>
+                        INSTANCE_PRESENTATION_QOS
+                    </access_scope>
+                </presentation>
+            </subscriber_qos>
+
+            <!-- Disable the entities under publisher by default. This causes the writers to be created in a disabled state
+            and is not discovered by other applications. This will be enabled during lookup operation -->
+            <publisher_qos>
+                <entity_factory>
+                    <autoenable_created_entities>false</autoenable_created_entities>
+                </entity_factory>
+            </publisher_qos>
+            <datawriter_qos>
+                <reliability>
+                    <max_blocking_time>
+                        <sec>0</sec>
+                    </max_blocking_time>
+                    <acknowledgment_kind>APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE</acknowledgment_kind>
+                </reliability>
+                <resource_limits>
+                    <max_instances>1</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>80</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+                <property>
+                    <value>
+                        <element>
+                            <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                            <value>4096</value>
+                        </element>
+                    </value>
+                </property>
+            </datawriter_qos>
+            @TESTS_ONLY_PROPERTY2@
+
+        </qos_profile>
+
+        <!--Desigined for event based communication where the writer needs to know that a reader fails to receive a
+            communication, and a reader needs to know whether the writer is alive-->
+        <qos_profile name="CriticalWriteQos"
+                     base_name="EinsteinDefaultQoS" is_default_qos="false">
+            <datawriter_qos>
+                <reliability>
+                    <kind>DDS_RELIABLE_RELIABILITY_QOS</kind>
+                    <max_blocking_time>
+                        <sec>0</sec>
+                    </max_blocking_time>
+                </reliability>
+                <durability>
+                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+                </durability>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>80</depth>
+                </history>
+                <liveliness>
+                    <lease_duration>
+                        <sec>1</sec>
+                        <nanosec>000000000</nanosec>
+                    </lease_duration>
+                    <assertions_per_lease_duration>3</assertions_per_lease_duration>
+                    <kind>DDS_AUTOMATIC_LIVELINESS_QOS</kind>
+                </liveliness>
+                <protocol>
+                    <rtps_reliable_writer>
+                        <heartbeat_period>
+                            <sec>0</sec>
+                            <nanosec>300000000</nanosec>
+                        </heartbeat_period>
+                        <max_heartbeat_retries>3</max_heartbeat_retries>
+                    </rtps_reliable_writer>
+                </protocol>
+            </datawriter_qos>
+            <datareader_qos>
+                <reliability>
+                    <kind>DDS_RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <durability>
+                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+                </durability>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>80</depth>
+                </history>
+                <liveliness>
+                    <kind>DDS_AUTOMATIC_LIVELINESS_QOS</kind>
+                    <lease_duration>
+                        <sec>1</sec>
+                        <nanosec>000000000</nanosec>
+                    </lease_duration>
+                </liveliness>
+                <protocol>
+                    <rtps_reliable_reader>
+                    </rtps_reliable_reader>
+                </protocol>
+            </datareader_qos>
+        </qos_profile>
+
+        <!-- used by MscStatus writers and GUI readers - less risk of false positives with LIVELINESS_LOST checks -->
+        <qos_profile name="GuiCriticalQoS"
+                     base_name="CriticalWriteQos"
+                     is_default_qos="false">
+            <!-- NOTES from Consultation with RTI engineers in July 2020, regarding livelness settings:
+     DDS_AUTOMATIC_LIVELINESS_QOS:
+         Recommended liveliness lease values for readers, writers:
+         a) The lease duration reader value should be higher than the writer value.
+            The lease_duration of the reader is used during discovery, If the value is below
+            the writer, then discovery will fail.
+         b) The assertions per lease duration should be high enough so that at least three assertions
+            (akin to the "three strikes rule" in baseball) by the writer occur duing the liveliness
+            check interval.
+     DDS_MANUAL_BY_[PARTICIPANT|TOPIC]_LIVELINESS_QOS:
+         RTI recommneds evaluating switching to one of the "manual" modes in the future, to handle cases where
+         the writer thread may hang, but the writer's participant is still alive and reporting liveliness.
+ -->
+            <datareader_qos>
+            <liveliness>
+                <kind>DDS_AUTOMATIC_LIVELINESS_QOS</kind>
+                <lease_duration>
+                    <sec>4</sec>
+                    <nanosec>000000000</nanosec>
+                </lease_duration>
+            </liveliness>
+            </datareader_qos>
+            <datawriter_qos>
+            <liveliness>
+                <lease_duration>
+                    <sec>3</sec>
+                    <nanosec>000000000</nanosec>
+                </lease_duration>
+                <assertions_per_lease_duration>4</assertions_per_lease_duration>
+                <kind>DDS_AUTOMATIC_LIVELINESS_QOS</kind>
+            </liveliness>
+            </datawriter_qos>
+        </qos_profile>
+
+        <!-- used by SMC with support of keyed instances -->
+        <qos_profile name="SmcKeyedCriticalWriteQoS"
+                     base_name="CriticalWriteQos"
+                     is_default_qos="false">
+            <datareader_qos>
+                <resource_limits>
+                    <max_instances>3</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>240</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+            </datareader_qos>
+            <datawriter_qos>
+                <resource_limits>
+                    <max_instances>3</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>240</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+                <reliability>
+                    <max_blocking_time>
+                        <sec>0</sec>
+                    </max_blocking_time>
+                </reliability>
+            </datawriter_qos>
+        </qos_profile>
+
+        <!-- used by SMC with support of keyed instances - longer liveliness interval -->
+        <qos_profile name="SmcKeyedCriticalWriteLongLivelinessQoS"
+                     base_name="SmcKeyedCriticalWriteQoS"
+                     is_default_qos="false">
+            <datareader_qos>
+                <liveliness>
+                    <kind>DDS_AUTOMATIC_LIVELINESS_QOS</kind>
+                    <lease_duration>
+                        <sec>4</sec>
+                        <nanosec>000000000</nanosec>
+                    </lease_duration>
+                </liveliness>
+            </datareader_qos>
+            <datawriter_qos>
+                <liveliness>
+                    <lease_duration>
+                        <sec>3</sec>
+                        <nanosec>000000000</nanosec>
+                    </lease_duration>
+                    <assertions_per_lease_duration>4</assertions_per_lease_duration>
+                    <kind>DDS_AUTOMATIC_LIVELINESS_QOS</kind>
+                </liveliness>
+            </datawriter_qos>
+        </qos_profile>
+
+        <qos_profile name="StorzCriticalKeepCurrentValueQoS"
+                     base_name="CriticalWriteQos"
+                     is_default_qos="false">
+            <!-- This profile is meant to keep ONE current value of a topic -->
+            <datareader_qos>
+                <history>
+                    <depth>1</depth>
+                </history>
+            </datareader_qos>
+            <datawriter_qos>
+                <history>
+                    <depth>1</depth>
+                </history>
+            </datawriter_qos>
+        </qos_profile>
+
+
+        <qos_profile name="CriticalWriteNoDurabilityQoS"
+                     base_name="CriticalWriteQos"
+                     is_default_qos="false">
+            <datareader_qos>
+                <durability>
+                    <kind>VOLATILE_DURABILITY_QOS</kind>
+                </durability>
+            </datareader_qos>
+            <datawriter_qos>
+                <durability>
+                    <kind>VOLATILE_DURABILITY_QOS</kind>
+                </durability>
+            </datawriter_qos>
+        </qos_profile>
+
+        <!-- This profile is used by the TPSC and carts. The carts and system monitor each have
+             one writer. The TPSC has a reader that can receive messages from each cart. -->
+        <qos_profile name="CartTpscCriticalWriteQos"
+                     base_name="CriticalWriteQos" is_default_qos="false">
+            <datawriter_qos>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>1</depth>
+                </history>
+                <liveliness>
+                    <lease_duration>
+                        <sec>1</sec>
+                        <nanosec>000000000</nanosec>
+                    </lease_duration>
+                    <assertions_per_lease_duration>3</assertions_per_lease_duration>
+                    <kind>DDS_AUTOMATIC_LIVELINESS_QOS</kind>
+                </liveliness>
+                <resource_limits>
+                    <initial_instances>1</initial_instances>
+                    <max_instances>1</max_instances>
+                    <initial_samples>1</initial_samples>
+                    <max_samples>1</max_samples>
+                    <max_samples_per_instance>1</max_samples_per_instance>
+                </resource_limits>
+                <protocol>
+                    <rtps_reliable_writer>
+                        <heartbeats_per_max_samples>1</heartbeats_per_max_samples>
+                        <high_watermark>1</high_watermark>
+                        <low_watermark>0</low_watermark>
+                    </rtps_reliable_writer>
+                </protocol>
+            </datawriter_qos>
+            <datareader_qos>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>5</depth>
+                </history>
+                <liveliness>
+                    <kind>DDS_AUTOMATIC_LIVELINESS_QOS</kind>
+                    <lease_duration>
+                        <sec>1</sec>
+                        <nanosec>000000000</nanosec>
+                    </lease_duration>
+                </liveliness>
+                <reader_resource_limits>
+                    <max_samples_per_remote_writer>1</max_samples_per_remote_writer>
+                    <max_remote_writers>5</max_remote_writers>
+                </reader_resource_limits>
+                <resource_limits>
+                    <initial_instances>1</initial_instances>
+                    <max_instances>1</max_instances>
+                    <initial_samples>5</initial_samples>
+                    <max_samples>5</max_samples>
+                    <max_samples_per_instance>5</max_samples_per_instance>
+                </resource_limits>
+            </datareader_qos>
+        </qos_profile>
+
+        <qos_profile name="EinsteinRealtimeControlData"
+                     base_name="BuiltinQosLibExp::Generic.BestEffort"
+                     is_default_qos="false">
+
+            <datareader_qos>
+                <reliability>
+                    <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+                </reliability>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>1</depth>
+                </history>
+                <resource_limits>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>1</max_samples>
+                    <initial_samples>1</initial_samples>
+                    <max_samples_per_instance>1</max_samples_per_instance>
+                    <max_instances>1</max_instances>
+                </resource_limits>
+            </datareader_qos>
+            <datawriter_qos>
+                <property>
+                    <value>
+                        <element>
+                            <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                            <value>4096</value>
+                        </element>
+                    </value>
+                </property>
+                <resource_limits>
+                    <initial_instances>1</initial_instances>
+                    <max_instances>1</max_instances>
+                </resource_limits>
+            </datawriter_qos>
+
+        </qos_profile>
+
+        <qos_profile name="EinsteinRealtimeControlDataAsyncWriteQoS"
+                base_name="EinsteinRealtimeControlData"
+                is_default_qos="false">
+            <datawriter_qos>
+                <protocol>
+                        <push_on_write>true</push_on_write>
+                </protocol>
+                <publish_mode>
+                    <kind>ASYNCHRONOUS_PUBLISH_MODE_QOS</kind>
+                </publish_mode>
+            </datawriter_qos>
+        </qos_profile>
+
+        <qos_profile name="EinsteinReliableQoS"
+                     base_name="BuiltinQosLibExp::Generic.StrictReliable"
+                     is_default_qos="false">
+
+            <datareader_qos>
+                <reliability>
+                    <acknowledgment_kind>APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE</acknowledgment_kind>
+                </reliability>
+                <!-- Enabled transient local durability to provide history to
+                     late-joiners. -->
+                <durability>
+                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+                </durability>
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                </history>
+                <resource_limits>
+                    <max_instances>1</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>80</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+            </datareader_qos>
+            <subscriber_qos>
+                <presentation>
+                    <access_scope>
+                        INSTANCE_PRESENTATION_QOS
+                    </access_scope>
+                </presentation>
+            </subscriber_qos>
+            <datawriter_qos>
+                <reliability>
+                    <acknowledgment_kind>APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE</acknowledgment_kind>
+                    <max_blocking_time>
+                        <sec>0</sec>
+                    </max_blocking_time>
+                </reliability>
+                <durability>
+                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+                </durability>
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                </history>
+                <resource_limits>
+                    <max_instances>1</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>80</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+                <property>
+                    <value>
+                        <element>
+                            <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                            <value>4096</value>
+                        </element>
+                    </value>
+                </property>
+            </datawriter_qos>
+        </qos_profile>
+
+        <qos_profile name="EinsteinKeepCurrentValueQoS"
+                     base_name="EinsteinDefaultQoS"
+                     is_default_qos="false">
+            <!-- This profile is meant to keep ONE current value of a topic -->
+            <!-- It is reliable, transientlocal, keep_last_history with a depth of 1 -->
+            <datareader_qos>
+                <history>
+                    <depth>1</depth>
+                </history>
+            </datareader_qos>
+            <datawriter_qos>
+                <history>
+                    <depth>1</depth>
+                </history>
+            </datawriter_qos>
+        </qos_profile>
+
+        <qos_profile name="EinsteinReliableNoDurabilityQoS"
+                     base_name="EinsteinReliableQoS"
+                     is_default_qos="false">
+            <!-- This profile provides no historical dds samples for late joiners -->
+            <datareader_qos>
+                <durability>
+                    <kind>VOLATILE_DURABILITY_QOS</kind>
+                </durability>
+            </datareader_qos>
+            <datawriter_qos>
+                <durability>
+                    <kind>VOLATILE_DURABILITY_QOS</kind>
+                </durability>
+            </datawriter_qos>
+        </qos_profile>
+
+        <qos_profile name="ErrorQoS"
+                     base_name="BuiltinQosLibExp::Generic.BestEffort"
+                     is_default_qos="false">
+
+            <datareader_qos>
+                <history>
+                    <depth>1</depth>
+                </history>
+            </datareader_qos>
+            <datawriter_qos>
+                <history>
+                    <depth>1</depth>
+                </history>
+            </datawriter_qos>
+        </qos_profile>
+
+        <qos_profile name="DiscoveryMessageQoS"
+            base_name="EinsteinRealtimeControlData"
+            is_default_qos="false">
+            <datareader_qos base_name="BuiltinQosLibExp::Generic.BestEffort">
+                <resource_limits>
+                    <max_instances>80</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>8000</max_samples>
+                    <max_samples_per_instance>8000</max_samples_per_instance>
+                </resource_limits>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>8000</depth>
+                </history>
+            </datareader_qos>
+            <datawriter_qos>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>1</depth>
+                </history>
+            </datawriter_qos>
+            <!-- participant_qos is not supported inside of topic qos_profiles. See DDSDomainParticipantBuilder
+                 for customizing DomainParticipantQoS including adjusting allow_interface_list -->
+        </qos_profile>
+
+        <!-- TODO: Consolidate profile with EinsteinRealtimeControlData
+             QoS profile to inherit settings -->
+        <qos_profile name="IndividualCartShutdownPeriodicQoS"
+            base_name="BuiltinQosLibExp::Generic.BestEffort"
+            is_default_qos="false">
+
+            <datareader_qos>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>1</depth>
+                </history>
+            </datareader_qos>
+        </qos_profile>
+
+        <qos_profile name="SmcKeyedReliableQoS"
+                     base_name="EinsteinReliableQoS"
+                     is_default_qos="false">
+            <datareader_qos>
+                <resource_limits>
+                    <max_instances>3</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>240</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+            </datareader_qos>
+            <datawriter_qos>
+                <resource_limits>
+                    <max_instances>3</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>240</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+            </datawriter_qos>
+
+        </qos_profile>
+
+        <!-- This is the profile used by the Requester.
+             It inherits from "default", defined above,
+             and overrides some QoS -->
+        <qos_profile name="EinsteinCustomProfile"
+                     base_name="EinsteinDefaultQoS">
+        </qos_profile>
+
+        <qos_profile name="ProcessAndDeploymentQos"
+                     base_name="BuiltinQosLibExp::Generic.KeepLastReliable.TransientLocal"
+                     is_default_qos="false">
+
+            <datareader_qos>
+                <resource_limits>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>80</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+                <reliability>
+                    <acknowledgment_kind>APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE</acknowledgment_kind>
+                </reliability>
+            </datareader_qos>
+            <subscriber_qos>
+                <presentation>
+                    <access_scope>
+                        INSTANCE_PRESENTATION_QOS
+                    </access_scope>
+                </presentation>
+            </subscriber_qos>
+            <datawriter_qos>
+                <resource_limits>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>80</max_samples>
+                    <max_samples_per_instance>80</max_samples_per_instance>
+                </resource_limits>
+                <reliability>
+                    <acknowledgment_kind>APPLICATION_EXPLICIT_ACKNOWLEDGMENT_MODE</acknowledgment_kind>
+                </reliability>
+                <property>
+                    <value>
+                        <element>
+                            <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                            <value>4096</value>
+                        </element>
+                    </value>
+                </property>
+            </datawriter_qos>
+        </qos_profile>
+
+        <qos_profile name="ProcessManagerCommandQos"
+                     base_name="EinsteinReliableNoDurabilityQoS"
+                     is_default_qos="false">
+            <datareader_qos>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>80</depth>
+                </history>
+                <protocol>
+                    <rtps_reliable_reader>
+                        <app_ack_period>
+                            <sec>0</sec>
+                            <nanosec>100000000</nanosec>
+                        </app_ack_period>
+                    </rtps_reliable_reader>
+                </protocol>
+            </datareader_qos>
+            <datawriter_qos>
+                <lifespan>
+                    <!-- Data older than duration will not be provided to application and will not be repaired by the reliability protocol if dropped. -->
+                    <duration>
+                        <sec>10</sec>
+                        <nanosec>0</nanosec>
+                    </duration>
+                </lifespan>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>80</depth>
+                </history>
+            </datawriter_qos>
+        </qos_profile>
+
+        <qos_profile name="ProcessManagerInfoQos"
+                     base_name="BuiltinQosLibExp::Generic.BestEffort"
+                     is_default_qos="false">
+
+            <datareader_qos>
+                <deadline>
+                    <period>
+                        <sec>3</sec>
+                        <nanosec>0</nanosec>
+                    </period>
+                </deadline>
+                <resource_limits>
+                    <max_instances>80</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>640</max_samples>
+                    <max_samples_per_instance>640</max_samples_per_instance>
+                </resource_limits>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>640</depth>
+                </history>
+            </datareader_qos>
+            <datawriter_qos>
+                <deadline>
+                    <period>
+                        <sec>2</sec>
+                        <nanosec>0</nanosec>
+                    </period>
+                </deadline>
+            </datawriter_qos>
+        </qos_profile>
+
+
+        <qos_profile name="InsecureProcessManagerInfoQos"
+                     base_name="BuiltinQosLibExp::Generic.BestEffort"
+                     is_default_qos="false">
+
+            <datareader_qos>
+                <resource_limits>
+                    <max_instances>80</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <max_samples>640</max_samples>
+                    <max_samples_per_instance>640</max_samples_per_instance>
+                </resource_limits>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>640</depth>
+                </history>
+            </datareader_qos>
+        </qos_profile>
+
+    </qos_library>
+</dds>

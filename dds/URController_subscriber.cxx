@@ -66,10 +66,14 @@ unsigned int process_data(dds::sub::DataReader<DesireJoint>& reader)
 
 void run_example(unsigned int domain_id, unsigned int sample_count)
 {
+    // Loads the QoS from the qos_profiles.xml file. 
+    dds::core::QosProvider qos_provider("../dds/USER_QOS_PROFILES.xml");
     // A DomainParticipant allows an application to begin communicating in
     // a DDS domain. Typically there is one DomainParticipant per application.
     // Create a DomainParticipant with default Qos
-    dds::domain::DomainParticipant participant(domain_id);
+    dds::domain::DomainParticipant participant(domain_id,
+                                               qos_provider.participant_qos(
+                                               "UR5Controller_Library::UR5Controller_Profile"));
 
     // A Topic has a name and a datatype. Create a Topic named
     // "URController Topic" with type URController

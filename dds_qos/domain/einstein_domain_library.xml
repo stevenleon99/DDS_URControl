@@ -1,0 +1,886 @@
+<?xml version="1.0"?>
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="@CONNEXTDDS_RESOURCE_QOS_PROFILES_SCHEMA_DIR@/rti_dds_qos_profiles.xsd"
+     version="@CONNEXTDDS_FOUND_VERSION@">
+
+    <domain_library name="EinsteinCommunicationDomainLibrary">
+
+        <!-- Types and Topics used in both Core and SRA Domain -->
+        <domain name="CommonDomain">
+
+            <!-- ############################################################################################### -->
+            <!-- All Alarms and Notifications related types -->
+            <!-- ############################################################################################### -->
+            <register_type name="AlarmAndNotificationMessage" kind="userGenerated"/>
+            <register_type name="AlarmAndNotificationMessage1" kind="userGenerated"/>
+            <register_type name="AlarmAndNotificationMessage2" kind="userGenerated"/>
+            <register_type name="AlarmAndNotificationMessage3" kind="userGenerated"/>
+            <register_type name="AlarmAndNotificationMessage4" kind="userGenerated"/>
+
+            <register_type name="DismissOrSilence" kind="userGenerated"/>
+            <register_type name="IndicatorMessage" kind="userGenerated"/>
+            <register_type name="AudioIndicatorMessage" kind="userGenerated"/>
+            <register_type name="LedIndicatorMessage1" kind="userGenerated"/>
+            <register_type name="LedIndicatorMessage2" kind="userGenerated"/>
+            <register_type name="LedIndicatorMessage3" kind="userGenerated"/>
+            <register_type name="LedIndicatorMessage4" kind="userGenerated"/>
+
+            <register_type name="SynchronizationReplyMessage" kind="userGenerated"/>
+            <register_type name="SynchronizationCommand" kind="userGenerated"/>
+            <register_type name="SystemResetCount" kind="userGenerated"/>
+
+            <register_type name="MockGuiLinkMasterCommand" kind="userGenerated"/>
+
+            <!-- ############################################################################################### -->
+            <!-- All Alarms diagnostic tool related types -->
+            <!-- ############################################################################################### -->
+            <register_type name="AlarmAndNotificationCommand" kind="userGenerated"/>
+            
+            <register_type name="AlarmsCommand" kind="userGenerated"/>
+            <register_type name="AlarmsCommand1" kind="userGenerated"/>
+            <register_type name="AlarmsCommand2" kind="userGenerated"/>
+            <register_type name="AlarmsCommand3" kind="userGenerated"/>
+            <register_type name="AlarmsCommand4" kind="userGenerated"/>
+            <register_type name="AlarmsList" kind="userGenerated"/>
+
+            <!-- Alarms diagnostic tool Topics -->
+            <topic register_type_ref="AlarmAndNotificationCommand" name="AlarmAndNotificationCommandTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+
+            <topic register_type_ref="AlarmsCommand" name="AlarmsCommandTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AlarmsCommand1" name="AlarmsCommand1Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AlarmsCommand2" name="AlarmsCommand2Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AlarmsCommand3" name="AlarmsCommand3Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AlarmsCommand4" name="AlarmsCommand4Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AlarmsList" name="AlarmsListTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+
+            <!-- Alarms Client Related Topics -->
+            <topic register_type_ref="AlarmAndNotificationMessage" name="AlarmAndNotificationMessageTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AlarmAndNotificationMessage1" name="AlarmAndNotificationMessage1Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AlarmAndNotificationMessage2" name="AlarmAndNotificationMessage2Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AlarmAndNotificationMessage3" name="AlarmAndNotificationMessage3Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AlarmAndNotificationMessage4" name="AlarmAndNotificationMessage4Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+
+
+            <!-- Alarms indicator related Topics -->
+            <topic register_type_ref="IndicatorMessage" name="IndicatorMessageTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="AudioIndicatorMessage" name="AudioIndicatorMessageTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="LedIndicatorMessage1" name="LedIndicatorMessage1Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="LedIndicatorMessage2" name="LedIndicatorMessage2Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="LedIndicatorMessage3" name="LedIndicatorMessage3Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="LedIndicatorMessage4" name="LedIndicatorMessage4Topic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+
+            <topic register_type_ref="DismissOrSilence" name="DismissOrSilenceTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+
+            <!-- Alarm Subsystem Specific Topics -->
+            <topic register_type_ref="SynchronizationReplyMessage" name="SynchronizationReplyMessageTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="SynchronizationCommand" name="SynchronizationCommandTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+
+            <!-- Alarm Reset Count Topics -->
+            <topic register_type_ref="SystemResetCount" name="SystemResetCountTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+
+            <topic register_type_ref="MockGuiLinkMasterCommand" name="MockGuiLinkMasterCommandTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- Error Aggregator related Topics and Types-->
+            <!-- ############################################################################################### -->
+            <register_type name="ErrorCount" kind="userGenerated"/>
+            <register_type name="ACA1ErrorCount" kind="userGenerated"/>
+            <register_type name="ACA2ErrorCount" kind="userGenerated"/>
+            <register_type name="ACA3ErrorCount" kind="userGenerated"/>
+            <register_type name="ACA4ErrorCount" kind="userGenerated"/>
+            <register_type name="ErrorCountRequest" kind="userGenerated"/>
+            <register_type name="ACA1ErrorCountRequest" kind="userGenerated"/>
+            <register_type name="ACA2ErrorCountRequest" kind="userGenerated"/>
+            <register_type name="ACA3ErrorCountRequest" kind="userGenerated"/>
+            <register_type name="ACA4ErrorCountRequest" kind="userGenerated"/>
+
+            <topic register_type_ref="ErrorCount" name="ErrorCountTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="ACA1ErrorCount" name="ACA1ErrorCountTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="ACA2ErrorCount" name="ACA2ErrorCountTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="ACA3ErrorCount" name="ACA3ErrorCountTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="ACA4ErrorCount" name="ACA4ErrorCountTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="ErrorCountRequest" name="ErrorCountRequestTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="ACA1ErrorCountRequest" name="ACA1ErrorCountRequestTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="ACA2ErrorCountRequest" name="ACA2ErrorCountRequestTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="ACA3ErrorCountRequest" name="ACA3ErrorCountRequestTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+            <topic register_type_ref="ACA4ErrorCountRequest" name="ACA4ErrorCountRequestTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ErrorQoS"/>
+            </topic>
+
+        </domain>
+
+        <domain name="CoreDomain" base_name="CommonDomain">
+
+            <!-- ##############################################################################-->
+            <!-- Safety /MSC interface-->
+            <register_type name="SafetyEnable" kind="userGenerated"/>
+            <register_type name="SafetyStatus" kind="userGenerated"/>
+
+            <topic register_type_ref="SafetyEnable" name="SafetyEnableTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinDefaultQoS"/>
+            </topic>
+            <topic register_type_ref="SafetyStatus" name="SafetyStatusTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinDefaultQoS"/>
+            </topic>
+            <!-- ############################################################################################### -->
+            <!-- Configuration Subsystem Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="ProcedureInfo" kind="userGenerated"/>
+            <register_type name="ComponentStates" kind="userGenerated"/>
+            <register_type name="ModeCommand" kind="userGenerated"/>
+            <register_type name="SystemLanguage" kind="userGenerated"/>
+            <register_type name="SystemProperties" kind="userGenerated"/>
+
+            <!-- Topics using best effort QoS profile -->
+            <topic register_type_ref="ComponentStates" name="Configuration/ComponentStates">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <topic register_type_ref="ProcedureInfo" name="Configuration/ProcedureInfo">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"/>
+            </topic>
+            <topic register_type_ref="ModeCommand" name="Configuration/ModeCommand">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableNoDurabilityQoS"/>
+            </topic>
+            <topic register_type_ref="SystemLanguage" name="Configuration/SystemLanguage">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"/>
+            </topic>
+            <topic register_type_ref="SystemProperties" name="Configuration/SystemProperties">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- Certificate Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="CertificateStatus" kind="userGenerated"></register_type>
+            <register_type name="GetCSR" kind="userGenerated"></register_type>
+            <register_type name="GetCSRResponse" kind="userGenerated"></register_type>
+            <register_type name="WriteCertificate" kind="userGenerated"></register_type>
+            <register_type name="WriteCertificateResponse" kind="userGenerated"></register_type>
+            <register_type name="CertificateValidityStatus" kind="userGenerated"></register_type>
+            <register_type name="SigningApproval" kind="userGenerated"></register_type>
+            <register_type name="SigningApprovalResponse" kind="userGenerated"></register_type>
+            <register_type name="WriteApproval" kind="userGenerated"></register_type>
+            <register_type name="WriteApprovalResponse" kind="userGenerated"></register_type>
+            <register_type name="CachedData" kind="userGenerated"></register_type>
+            <register_type name="UserAuthorizationRequest" kind="userGenerated"></register_type>
+            <register_type name="GetCachedData" kind="userGenerated"></register_type>
+            <register_type name="ClearNodeCache" kind="userGenerated"></register_type>
+
+            <topic register_type_ref="CertificateStatus" name="Certificate/CertificateStatus">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="GetCSR" name="Certificate/GetCSR">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="GetCSRResponse" name="Certificate/GetCSRResponse">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="WriteCertificate" name="Certificate/WriteCertificate">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="WriteCertificateResponse" name="Certificate/WriteCertificateResponse">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="SigningApproval" name="Certificate/SigningApproval">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="SigningApprovalResponse" name="Certificate/SigningApprovalResponse">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="WriteApproval" name="Certificate/WriteApproval">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="WriteApprovalResponse" name="Certificate/WriteApprovalResponse">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="CertificateValidityStatus" name="Certificate/CertificateValidityStatus">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="GetCachedData" name="Certificate/GetCachedData">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="CachedData" name="Certificate/CachedData">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="UserAuthorizationRequest" name="Certificate/UserAuthorizationRequest">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="ClearNodeCache" name="Certificate/ClearNodeCache">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- Deployment Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="DiscoveryMessage" kind="userGenerated"></register_type>
+            <register_type name="DeploymentCommand" kind="userGenerated"></register_type>
+            <register_type name="DeploymentInfo" kind="userGenerated"></register_type>
+
+            <topic register_type_ref="DiscoveryMessage" name="Deployment/DiscoveryMessage">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <topic register_type_ref="DeploymentInfo" name="Deployment/DeploymentInfo">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <topic register_type_ref="DeploymentCommand" name="Deployment/DeploymentCommand">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- FSE Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="FseControl" kind="userGenerated"/>
+            <register_type name="FseSafetyCommand" kind="userGenerated"/>
+            <register_type name="FseStatusActual" kind="userGenerated"/>
+
+            <topic name="einstein/fse/control" register_type_ref="FseControl">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+
+            <topic name="einstein/fse/power" register_type_ref="FsePowerControl">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinDefaultQoS"/>
+            </topic>
+
+            <topic name="einstein/fse/sensor" register_type_ref="FseStatusActual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+
+
+            <!-- ############################################################################################### -->
+            <!-- Logging Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="LogMessageTopic" kind="userGenerated"/>
+            <register_type name="DataAccessMessage" kind="userGenerated"/>
+
+            <topic register_type_ref="LogMessageTopic" name="LogMessageTopicTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <topic register_type_ref="DataAccessMessage" name="DataAccessMessageCommandTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <topic register_type_ref="DataAccessMessage" name="DataAccessMessageStatusTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- MSC HW Manager Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="TowerButtonState" kind="userGenerated"/>
+            <register_type name="TowerLEDCommand" kind="userGenerated"/>
+
+            <topic register_type_ref="TowerButtonState" name="Core/Tower/TowerButtonState">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableNoDurabilityQoS"/>
+            </topic>
+            <topic register_type_ref="TowerLEDCommand" name="Core/Tower/TowerLEDCommand">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- MS Controller Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="MscStatesActual" kind="userGenerated"/>
+            <topic register_type_ref="MscStatesActual" name="Msc/MscStatesActual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"></topic_qos>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- Process Manager Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="ProcessInfo" kind="userGenerated"></register_type>
+            <register_type name="ProcessManagerInfo" kind="userGenerated"></register_type>
+            <register_type name="ProcessManagerCommand" kind="userGenerated"></register_type>
+
+            <!-- Information Sent to the diagnostic GUI /USER about entire system-->
+            <topic register_type_ref="ProcessManagerInfo" name="User/Startup/ProcessManagerInformation">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ProcessAndDeploymentQos"/>
+            </topic>
+            <!-- Per process information on each node sent here -->
+            <topic register_type_ref="ProcessInfo" name="Master/Startup/ProcessInformation">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ProcessAndDeploymentQos"/>
+            </topic>
+            <!-- Each node sends their state information to the topic -->
+            <topic register_type_ref="ProcessManagerInfo" name="Master/Startup/ProcessManagerInformation">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <!-- Master commands to all other Process managers are sent here -->
+            <topic register_type_ref="ProcessManagerCommand" name="Master/Startup/ProcessManagerCommanded">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::ProcessAndDeploymentQos"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- System Monitor related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="ComponentStateMessage" kind="userGenerated"/>
+            <register_type name="SystemMonitorStateMessage" kind="userGenerated"/>
+            <register_type name="SystemMonitorCommand" kind="userGenerated" />
+
+            <!-- Information Sent to the Configuration Subsystem about entire system-->
+            <topic register_type_ref="ComponentStateMessage" name="SystemMonitor/ComponentStateMessage">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- Information Sent regarding the System Monitor State -->
+            <topic register_type_ref="SystemMonitorStateMessage" name="SystemMonitor/SystemMonitorStateMessage">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- Information Sent to prepare them for Shutdown  -->
+            <topic register_type_ref="PrepareForShutdownCommand" name="SystemMonitor/PrepareForShutdownCommandTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- Information Sent by subsystems when they have executed their pre shutdown procedure -->
+            <topic register_type_ref="PrepareForShutdownReply" name="SystemMonitor/PrepareForShutdownReplyTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- Command sent to System Monitor to toggle component states -->
+            <topic register_type_ref="SystemMonitorCommand" name="SystemMonitor/SystemMonitorCommandTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- TPSC related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="CartDetected" kind="userGenerated"/>
+            <register_type name="IndividualCartShutdown" kind="userGenerated"/>
+            <register_type name="IndividualCartShutdownPeriodic" kind="userGenerated"/>
+
+            <topic name="einstein/tpsc/cart_detected" register_type_ref="CartDetected">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"/>
+            </topic>
+            <topic name="einstein/tpsc/indv_cart_shutdown" register_type_ref="IndividualCartShutdown">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CartTpscCriticalWriteQos"/>
+            </topic>
+            <topic name="einstein/tpsc/indv_cart_shutdown_periodic" register_type_ref="IndividualCartShutdownPeriodic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::IndividualCartShutdownPeriodicQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- UPS related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="UpsGuiStatus" kind="userGenerated"/>
+            <register_type name="UpsCommand" kind="userGenerated"/>
+            <register_type name="UpsLoadCommand" kind="userGenerated"/>
+            <register_type name="UpsInfoMessage" kind="userGenerated"/>
+            <register_type name="UpsBatteryInfoMessage" kind="userGenerated"/>
+            <register_type name="UpsActivationStatus" kind="userGenerated"/>
+
+            <!-- Read the command sent by the System Monitor to the UPS -->
+            <topic register_type_ref="UpsCommand" name="UPS/UpsCommand">
+                <topic_qos base_name="BuiltinQosLibExp::Generic.StrictReliable"/>
+            </topic>
+            <!-- Read the command sent by the System Monitor to the UPS -->
+            <topic register_type_ref="UpsLoadCommand" name="UPS/UpsLoadCommand">
+                <topic_qos base_name="BuiltinQosLibExp::Generic.StrictReliable"/>
+            </topic>
+            <!--Write the UPS Status to the GUI -->
+            <topic register_type_ref="UpsGuiStatus" name="UPS/UpsGuiStatus">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <!--Write the Ups Info Message in this topic -->
+            <topic register_type_ref="UpsInfoMessage" name="UPS/UpsInfoMessage">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+            <!--Write the Ups Battery Info Message in this topic -->
+            <topic register_type_ref="UpsBatteryInfoMessage" name="UPS/UpsBatteryInfoMessage">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"></topic_qos>
+            </topic>
+            <!--Write the Ups Activation Message in this topic -->
+            <topic register_type_ref="UpsActivationStatus" name="UPS/UpsActivationStatusMessage">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- Service Mode related Types and Topics -->
+            <!-- ############################################################################################### -->
+
+            <register_type name="AvailableServicesMessage" kind="userGenerated"/>
+            <register_type name="ServiceStateMessage" kind="userGenerated"/>
+            <register_type name="ServiceLogsMessage" kind="userGenerated"/>
+            <register_type name="ToggleServiceMessage" kind="userGenerated"/>
+
+            <topic register_type_ref="AvailableServicesMessage" name="ServiceModeAvailableServicesMessageTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <topic register_type_ref="ServiceStateMessage" name="ServiceModeServiceStateMessageTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <topic register_type_ref="ServiceLogsMessage" name="ServiceModeServiceLogsMessageTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+            <topic register_type_ref="ToggleServiceMessage" name="ServiceModeToggleServiceMessageTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+        </domain>
+
+        <domain name="SraDomain" base_name="CommonDomain">
+
+            <!-- ############################################################################################### -->
+            <!-- Cart communication related types and topics-->
+            <!-- ############################################################################################### -->
+            <register_type name="CartStatus" kind="userGenerated"/>
+            <register_type name="ReleaseColumnBrakeCommand" kind="userGenerated"/>
+            <register_type name="SA48VRequest" kind="userGenerated"/>
+
+            <topic register_type_ref="CartStatus" name="einstein/cart/status">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <topic register_type_ref="ReleaseColumnBrakeCommand" name="einstein/column_brake/command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <topic register_type_ref="SA48VRequest" name="einstein/power_manger/sa_48v_request">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"/>
+            </topic>
+
+
+            <!-- ############################################################################################### -->
+            <!-- ACAD Communication Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="InstrumentInfoCommand" kind="userGenerated"/>
+
+            <topic register_type_ref="InstrumentInfoCommand" name="Msc/InstrumentInfoCommand">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- SRA Controller Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="SraJointsActual" kind="userGenerated"/>
+            <register_type name="SraJointsCommand" kind="userGenerated"/>
+            <register_type name="AcaErrorCounters" kind="userGenerated"/>
+            <register_type name="SystemErrorCounters" kind="userGenerated"/>
+            <register_type name="SraStatesActual" kind="userGenerated"/>
+            <register_type name="SraStatesCommand" kind="userGenerated"/>
+            <register_type name="InstrumentInfoActual" kind="userGenerated"/>
+
+            <topic register_type_ref="SraJointsActual" name="Sra/SraJointsActual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <topic register_type_ref="SraJointsCommand" name="Msc/SraJointsCommand">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <topic register_type_ref="AcaErrorCounters" name="Sra/AcaErrorCounters">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <topic register_type_ref="SystemErrorCounters" name="Msc/SystemErrorCounters">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <topic register_type_ref="SraStatesActual" name="Sra/SraStatesActual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="SraStatesCommand" name="Msc/SraStatesCommand">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="InstrumentInfoActual" name="Sra/InstrumentInfoActual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinReliableQoS"></topic_qos>
+            </topic>
+        </domain>
+
+        <domain name="SmcDomain">
+
+            <!-- ############################################################################################### -->
+            <!-- SMC Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="SmcStateActual" kind="userGenerated"/>
+            <register_type name="SmcErgonomicLevelActual" kind="userGenerated"/>
+            <register_type name="DisableErgonomics" kind="userGenerated"/>
+            <register_type name="ScLocalErrorState" kind="userGenerated"/>
+            <register_type name="ScMode" kind="userGenerated"/>
+            <register_type name="SmcHandleNotification" kind="userGenerated"/>
+            <register_type name="SmcEnableSurgeonConsoleDeactivation" kind="userGenerated"/>
+            <register_type name="ForceFeedbackCommand" kind="userGenerated"/>
+            <register_type name="HandleData" kind="userGenerated"/>
+            <register_type name="GuiEvent" kind="userGenerated"/>
+            <register_type name="SmcCalibrationStatus" kind="userGenerated"/>
+            <register_type name="SwitchControls" kind="userGenerated"/>
+            <register_type name="SmcHardwareConfigurationControl" kind="userGenerated"/>
+            <register_type name="DebugMsc" kind="userGenerated"/>
+            <!-- State  -->
+            <topic register_type_ref="SmcStateActual" name="SMC/SmcStateActual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </topic>
+            <!-- SwitchControls  -->
+            <topic register_type_ref="SwitchControls" name="SMC/SwitchControls">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></topic_qos>
+            </topic>
+            <!-- Topics received by SMC -->
+            <!-- DisableErgonomics  -->
+            <topic register_type_ref="DisableErgonomics" name="MSC/DisableErgonomics">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></topic_qos>
+            </topic>
+            <!-- ScLocalErrorState -->
+            <topic register_type_ref="ScLocalErrorState" name="SC_SC_IF/ScLocalErrorState">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteLongLivelinessQoS"/>
+            </topic>
+
+            <!-- ScMode -->
+            <topic register_type_ref="ScMode" name="SMC/ScMode">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS">
+                    <history>
+                        <kind>KEEP_LAST_HISTORY_QOS</kind>
+                        <depth>1</depth>
+                    </history>
+                </topic_qos>
+            </topic>
+            
+            <!-- SmcHandleNotification  -->
+            <topic register_type_ref="SmcHandleNotification" name="MSC/SmcHandleNotification">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></topic_qos>
+            </topic>
+            <!-- EnableSurgeonConsoleDeactivation  -->
+            <topic register_type_ref="SmcEnableSurgeonConsoleDeactivation"
+                   name="MSC/EnableSurgeonConsoleDeactivation">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></topic_qos>
+            </topic>
+            <!-- Topics using best effort QoS profile -->
+            <!-- ForceFeedbackCommand, received by SMC -->
+            <topic register_type_ref="ForceFeedbackCommand" name="MSC/ForceFeedbackCommand">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <!-- HandleData, published by SMC  -->
+            <topic register_type_ref="HandleData" name="SMC/HandleData">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <!-- DebugMsc, published by MSC  -->
+            <topic register_type_ref="DebugMsc" name="MSC/DebugMsc">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+            <!-- Topics using keep last reliable QoS profile -->
+            <!-- GuiEvent, received by SMC  -->
+            <topic register_type_ref="GuiEvent" name="SC_GUI_IF/GuiEvent">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </topic>
+            <!-- SmcCalibrationStatus, published by SMC -->
+            <topic register_type_ref="SmcCalibrationStatus" name="SC_GUI_IF/SmcCalibrationStatus">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </topic>
+            <!-- DeactivationRequest, published by SMC  -->
+            <topic register_type_ref="SwitchControls" name="SC_GUI_IF/DeactivationRequest">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </topic>
+            <!-- HardwareConfigurationControl  -->
+            <topic register_type_ref="SmcHardwareConfigurationControl"
+                   name="SMC_MSC_IF/HardwareConfigurationControl">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- Ergonomics Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="SmcErgonomicLevelCommand" kind="userGenerated"></register_type>
+            <register_type name="SmcDiagnosticErgonomicLimitSwitch" kind="userGenerated"></register_type>
+
+            <!-- ErgonomicLevelActual, published by SMC -->
+            <topic register_type_ref="SmcErgonomicLevelActual" name="SC_GUI_IF/ErgonomicLevel/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></topic_qos>
+            </topic>
+
+            <!-- ErgonomicLevelCommand, received by SMC -->
+            <topic register_type_ref="SmcErgonomicLevelCommand" name="SC_GUI_IF/ErgonomicLevel/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"></topic_qos>
+            </topic>
+
+            <!-- DiagnosticErgonomicLimitSwitch, published by SMC -->
+            <topic register_type_ref="SmcDiagnosticErgonomicLimitSwitch"
+                   name="SMC_DIAG_IF/ErgonomicLimitSwitch">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"></topic_qos>
+            </topic>
+
+            <!-- ############################################################################################### -->
+            <!-- HEAD Tracking Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="ScdcHeadTrackingData" kind="userGenerated"/>
+
+            <!-- HeadTrackingData  -->
+            <topic register_type_ref="ScdcHeadTrackingData" name="SC_MSC_IF/HeadTrackingData">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </topic>
+
+        </domain>
+
+        <domain name="GuiDomain">
+
+            <!-- ############################################################################################### -->
+            <!-- GUI Related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="GuiEvent" kind="userGenerated"/>
+            <register_type name="MscCameraCommand" kind="userGenerated"/>
+            <register_type name="MscCameraStatus" kind="userGenerated"/>
+            <register_type name="MscInstrumentFunctionStatus" kind="userGenerated"/>
+            <register_type name="MscStatus" kind="userGenerated"/>
+            <register_type name="MscUserSettings" kind="userGenerated"/>
+            <register_type name="SraArmStatus" kind="userGenerated"/>
+            <register_type name="MscRoutingDesired" kind="userGenerated"/>
+            <register_type name="MscRoutingActual" kind="userGenerated"/>
+            <register_type name="SimulationMode" kind="userGenerated"/>
+            <register_type name="SimSelectedTool" kind="userGenerated"/>
+            <register_type name="SimSwappableToolsList" kind="userGenerated"/>
+            <register_type name="OrtiStatus" kind="userGenerated"/>
+            <register_type name="MonochromaticModeAvailability" kind="userGenerated"/>
+            <register_type name="FluorescenceCommandsAllowed" kind="userGenerated"/>
+            <register_type name="GuiFluorescenceActive" kind="userGenerated"/>
+            <register_type name="GuiFluorescenceMode" kind="userGenerated"/>
+
+            <!-- GuiEvent  -->
+            <topic register_type_ref="GuiEvent" name="ORTI/GuiEvent">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <topic register_type_ref="GuiEvent" name="SCID/GuiEvent">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- MscCamera  -->
+            <topic register_type_ref="MscCameraCommand" name="GUI_IF/MscCameraCommand">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <topic register_type_ref="MscCameraStatus" name="GUI_IF/MscCameraStatus">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- MscInstrumentFunctionStatus  -->
+            <topic register_type_ref="MscInstrumentFunctionStatus" name="GUI_IF/MscInstrumentFunctionStatus">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- MscStatus  -->
+            <topic register_type_ref="MscStatus" name="GUI_IF/MscStatus">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- MscUserSettings  -->
+            <topic register_type_ref="MscUserSettings" name="GUI_IF/MscUserSettingsDesired">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <topic register_type_ref="MscUserSettings" name="GUI_IF/MscUserSettingsActual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- SraArmStatus  -->
+            <topic register_type_ref="SraArmStatus" name="GUI_IF/SraArmStatus1">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <topic register_type_ref="SraArmStatus" name="GUI_IF/SraArmStatus2">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <topic register_type_ref="SraArmStatus" name="GUI_IF/SraArmStatus3">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <topic register_type_ref="SraArmStatus" name="GUI_IF/SraArmStatus4">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- MscRoutingDesired -->
+            <topic register_type_ref="MscRoutingDesired" name="GUI_IF/MscRoutingDesired">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteNoDurabilityQoS"></topic_qos>
+            </topic>
+            <!-- MscRoutingActual -->
+            <topic register_type_ref="MscRoutingActual" name="GUI_IF/MscRoutingActual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- SimulationMode  -->
+            <topic register_type_ref="SimulationMode" name="GUI_IF/SimulationMode">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- SimSelectedTool  -->
+            <topic register_type_ref="SimSelectedTool" name="GUI_IF/SimSelectedTool">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- SimSwappableToolsList  -->
+            <topic register_type_ref="SimSwappableToolsList" name="GUI_IF/SimSwappableToolsList">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- OrtiStatus -->
+            <topic register_type_ref="OrtiStatus" name="GUI_IF/OrtiStatus">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- MonochromaticModeAvailability -->
+            <topic register_type_ref="MonochromaticModeAvailability" name="GUI_IF/MonochromaticModeAvailabilityTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- FluorescenceCommandsAllowed -->
+            <topic register_type_ref="FluorescenceCommandsAllowed" name="GUI_IF/FluorescenceCommandsAllowedTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- GuiFluorescenceActive -->
+            <topic register_type_ref="GuiFluorescenceActive" name="GUI_IF/GuiFluorescenceActiveTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- GuiFluorescenceMode -->
+            <topic register_type_ref="GuiFluorescenceMode" name="GUI_IF/GuiFluorescenceModeTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::CriticalWriteQos"></topic_qos>
+            </topic>
+            <!-- ############################################################################################### -->
+            <!-- Storz related Types and Topics -->
+            <!-- ############################################################################################### -->
+            <register_type name="EndoCameraHeadInfo" kind="userGenerated"/>
+            <register_type name="EndoCameraHeadState" kind="userGenerated"/>
+            <register_type name="EndoDigitalZoom" kind="userGenerated"/>
+            <register_type name="EndoDisplayMode" kind="userGenerated"/>
+            <register_type name="EndoFlipMode" kind="userGenerated"/>
+            <register_type name="EndoHeadButtonState" kind="userGenerated"/>
+            <register_type name="EndoLinkModuleInfo" kind="userGenerated"/>
+            <register_type name="EndoLinkModuleState" kind="userGenerated"/>
+            <register_type name="EndoCCUInfo" kind="userGenerated"/>
+            <register_type name="EndoSTechnologiesMode" kind="userGenerated"/>
+            <register_type name="EndoToggle2DLens" kind="userGenerated"/>
+            <register_type name="EndoTouchEvent" kind="userGenerated"/>
+            <register_type name="EndoWhiteBalanceActual" kind="userGenerated"/>
+            <register_type name="EndoWhiteBalanceCommand" kind="userGenerated"/>
+            <register_type name="EndoFluorescenceAvailability" kind="userGenerated"/>
+            <register_type name="EndoFluorescenceActive" kind="userGenerated"/>
+            <register_type name="EndoFluorescenceOverlayColor" kind="userGenerated"/>
+            <register_type name="EndoFluorescenceMode" kind="userGenerated"/>
+
+            <topic register_type_ref="EndoCameraHeadInfo" name="ENDO_GUI_IF/CameraHeadInfoTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::StorzCriticalKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoCameraHeadState" name="ENDO_GUI_IF/CameraHeadStateTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::StorzCriticalKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoLinkModuleState" name="ENDO_GUI_IF/LinkModuleStateTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoLinkModuleInfo" name="ENDO_GUI_IF/LinkModuleInfoTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoCCUInfo" name="ENDO_GUI_IF/CCUInfoTopic">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoToggle2DLens" name="ENDO_GUI_IF/Toggle2DLensTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoTouchEvent" name="ENDO_GUI_IF/TouchEventTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoDigitalZoom" name="ENDO_GUI_IF/DigitalZoomTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoDisplayMode" name="ENDO_GUI_IF/DisplayModeTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFlipMode" name="ENDO_GUI_IF/FlipModeTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoHeadButtonState" name="ENDO_GUI_IF/HeadButtonStateTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoSTechnologiesMode" name="ENDO_GUI_IF/STechnologiesModeTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoWhiteBalanceCommand" name="ENDO_GUI_IF/WhiteBalanceTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFluorescenceActive" name="ENDO_GUI_IF/FluorescenceActiveTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFluorescenceAvailability" name="ENDO_GUI_IF/FluorescenceAvailabilityTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFluorescenceOverlayColor" name="ENDO_GUI_IF/FluorescenceOverlayColorTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFluorescenceMode" name="ENDO_GUI_IF/FluorescenceModeTopic/Command">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoDigitalZoom" name="ENDO_GUI_IF/DigitalZoomTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoDisplayMode" name="ENDO_GUI_IF/DisplayModeTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFlipMode" name="ENDO_GUI_IF/FlipModeTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::StorzCriticalKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoSTechnologiesMode" name="ENDO_GUI_IF/STechnologiesModeTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoWhiteBalanceActual" name="ENDO_GUI_IF/WhiteBalanceTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFluorescenceAvailability" name="ENDO_GUI_IF/FluorescenceAvailabilityTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFluorescenceActive" name="ENDO_GUI_IF/FluorescenceActiveTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFluorescenceOverlayColor" name="ENDO_GUI_IF/FluorescenceOverlayColorTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoFluorescenceMode" name="ENDO_GUI_IF/FluorescenceModeTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+            <topic register_type_ref="EndoToggle2DLens" name="ENDO_GUI_IF/Toggle2DLensTopic/Actual">
+                <topic_qos base_name="EinsteinQoSProfileLibrary::EinsteinKeepCurrentValueQoS"></topic_qos>
+            </topic>
+
+        </domain>
+
+    </domain_library>
+
+</dds>

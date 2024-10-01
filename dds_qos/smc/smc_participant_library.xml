@@ -1,0 +1,238 @@
+<?xml version="1.0"?>
+<!-- Copyright 2019 Covidien LP -->
+<!-- All Rights Reserved. The information contained herein is confidential -->
+<!-- property of Covidien LP. The use, copying, transfer or disclosure of such -->
+<!-- information is prohibited except by express written agreement with Covidien LP. -->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="@CONNEXTDDS_RESOURCE_QOS_PROFILES_SCHEMA_DIR@/rti_dds_qos_profiles.xsd"
+     version="@CONNEXTDDS_FOUND_VERSION@">
+
+    <!-- This file defines the domain participants used by applications on the SMC node of the Surgeon Console,
+         and by processes that need to report error state information to the SMC. -->
+
+    <participant_library name="SmcSmcParticipantLibrary">
+
+        <!-- Realtime SMC application domain participant -->
+        <domain_participant name="SmcApplicationRealtimeParticipant"
+                            domain_id="@SMC_REALTIME_DOMAIN_ID@"
+                            domain_ref="EinsteinCommunicationDomainLibrary::SmcDomain">
+
+            <!-- Topics using keep last reliable QoS profile -->
+
+            <!-- StateActual, sent by SMC -->
+            <data_writer topic_ref="SMC/SmcStateActual" name="SmcStateActualWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_writer>
+
+            <!-- SwitchControls, sent by SMC -->
+            <data_writer topic_ref="SMC/SwitchControls" name="SwitchControlsWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"/>
+            </data_writer>
+
+            <!-- ScMode, sent by SMC -->
+            <data_writer topic_ref="SMC/ScMode" name="ScModeWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"/>
+            </data_writer>
+
+            <!-- DisableErgonomics, received by SMC -->
+            <data_reader topic_ref="MSC/DisableErgonomics" name="DisableErgonomicsReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></datareader_qos>
+            </data_reader>
+
+            <!-- ScLocalErrorState, received by SMC -->
+            <data_reader topic_ref="SC_SC_IF/ScLocalErrorState" name="ScLocalErrorStateReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteLongLivelinessQoS">
+                    <!-- NB: max_instances should match the enumeration size of ScProcessIdentifier -->
+                    <resource_limits>
+                        <max_instances>5</max_instances>
+                        <initial_instances>1</initial_instances>
+                        <max_samples>400</max_samples>
+                        <max_samples_per_instance>80</max_samples_per_instance>
+                    </resource_limits>
+                </datareader_qos>
+            </data_reader>
+
+            <!-- SmcHandleNotification, received by SMC -->
+            <data_reader topic_ref="MSC/SmcHandleNotification" name="SmcHandleNotificationReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></datareader_qos>
+            </data_reader>
+
+            <!-- EnableSurgeonConsoleDeactivation, received by SMC -->
+            <data_reader topic_ref="MSC/EnableSurgeonConsoleDeactivation"
+                         name="SmcEnableSurgeonConsoleDeactivationReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></datareader_qos>
+            </data_reader>
+
+            <!-- Topics using best effort QoS profile -->
+
+            <!-- ForceFeedbackCommand, received by SMC -->
+            <data_reader topic_ref="MSC/ForceFeedbackCommand" name="ForceFeedbackCommandReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </data_reader>
+
+            <!-- HandleData, sent by SMC  -->
+            <data_writer topic_ref="SMC/HandleData" name="HandleDataWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </data_writer>
+
+            <participant_qos base_name="EinsteinQoSProfileLibrary::EinsteinDefaultQoS">
+                <property inherit="true">
+                    <value>
+                        <element>
+                            <name>dds.transport.UDPv4.builtin.parent.allow_interfaces_list</name>
+                            <!-- NRT network address range is 192.168.0.* -->
+                            <value>192.168.0.*</value>
+                        </element>
+                        <element>
+                            <name>dds.transport.UDPv4.builtin.parent.deny_interfaces</name>
+                            <!-- The address range 192.168.33.* is a virtual network and should be excluded. -->
+                            <!-- The address ranges 192.168.56.* and 192.168.57.* are used to communicate
+                                 with the Galils and should be excluded. -->
+                            <value>192.168.1.*,192.168.33.*,192.168.56.*,192.168.57.*</value>
+                        </element>
+                    </value>
+                </property>
+            </participant_qos>
+        </domain_participant>
+
+        <!-- Non-Realtime SMC application domain participant -->
+        <domain_participant name="SmcApplicationNonRealtimeParticipant"
+                            domain_id="@SMC_NONREALTIME_DOMAIN_ID@"
+                            domain_ref="EinsteinCommunicationDomainLibrary::SmcDomain">
+
+            <!-- Topics using keep last reliable QoS profile -->
+
+            <!-- SmcCalibrationStatus, sent by SMC -->
+            <data_writer topic_ref="SC_GUI_IF/SmcCalibrationStatus" name="SmcCalibrationStatusWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_writer>
+
+            <!-- DeactivationRequest, sent by SMC  -->
+            <data_writer topic_ref="SC_GUI_IF/DeactivationRequest" name="DeactivationRequestWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_writer>
+
+            <!-- GuiEvent, received by SMC -->
+            <data_reader topic_ref="SC_GUI_IF/GuiEvent" name="ScidGuiEventReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_reader>
+
+            <!-- HardwareConfigurationControl, received by SMC  -->
+            <data_reader topic_ref="SMC_MSC_IF/HardwareConfigurationControl"
+                         name="SmcHardwareConfigurationControlReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_reader>
+
+            <participant_qos base_name="EinsteinQoSProfileLibrary::EinsteinDefaultQoS">
+                <property inherit="true">
+                <value>
+                        <element>
+                            <name>dds.transport.UDPv4.builtin.parent.allow_interfaces_list</name>
+                            <!-- NRT network address range is 192.168.0.* -->
+                            <value>192.168.0.*</value>
+                        </element>
+                        <element>
+                            <name>dds.transport.UDPv4.builtin.parent.deny_interfaces</name>
+                            <!-- The address range 192.168.33.* is a virtual network and should be excluded. -->
+                            <!-- The address ranges 192.168.56.* and 192.168.57.* are used to communicate
+                                 with the Galils and should be excluded. -->
+                            <value>192.168.1.*,192.168.33.*,192.168.56.*,192.168.57.*</value>
+                        </element>
+                    </value>
+                </property>
+                    <event>
+                        <thread>
+                            <!--CYCLIC_RT_1KHZ = 185 minus 1 for event thread-->
+                            <priority>184</priority>
+                        </thread>
+                    </event>
+                    <receiver_pool>
+                        <thread>
+                            <!--CYCLIC_RT_1KHZ = 185-->
+                            <priority>185</priority>
+                        </thread>
+                    </receiver_pool>
+            </participant_qos>
+        </domain_participant>
+
+        <!-- Non-Realtime SMC ergonomic controls domain participant -->
+        <domain_participant name="SmcErgonomicsNonRealtimeParticipant"
+                            domain_id="@SMC_NONREALTIME_DOMAIN_ID@"
+                            domain_ref="EinsteinCommunicationDomainLibrary::SmcDomain">
+
+            <!-- ErgonomicLevelActual, sent by SMC -->
+            <data_writer topic_ref="SC_GUI_IF/ErgonomicLevel/Actual" name="SmcErgonomicLevelActualWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"/>
+            </data_writer>
+
+            <!-- ErgonomicLevelCommand, received by SMC -->
+            <data_reader topic_ref="SC_GUI_IF/ErgonomicLevel/Command" name="SmcErgonomicLevelCommandReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_reader>
+
+            <!-- DiagnosticErgonomicLimitSwitch, sent by SMC -->
+            <data_writer topic_ref="SMC_DIAG_IF/ErgonomicLimitSwitch" name="SmcDiagnosticErgonomicLimitSwitchWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_writer>
+
+            <participant_qos base_name="EinsteinQoSProfileLibrary::EinsteinDefaultQoS">
+                <property inherit="true">
+                    <value>
+                        <element>
+                            <name>dds.transport.UDPv4.builtin.parent.allow_interfaces_list</name>
+                            <!-- NRT network address range is 192.168.0.* -->
+                            <value>192.168.0.*</value>
+                        </element>
+                        <element>
+                            <name>dds.transport.UDPv4.builtin.parent.deny_interfaces</name>
+                            <!-- The address range 192.168.33.* is a virtual network and should be excluded. -->
+                            <!-- The address ranges 192.168.56.* and 192.168.57.* are used to communicate
+                                 with the Galils and should be excluded. -->
+                            <value>192.168.1.*,192.168.33.*,192.168.56.*,192.168.57.*</value>
+                        </element>
+                    </value>
+                </property>
+            </participant_qos>
+
+        </domain_participant>
+
+        <!-- SC error-generating process domain participant -->
+        <domain_participant name="ScErrorProcessParticipant"
+                            domain_id="@SMC_REALTIME_DOMAIN_ID@"
+                            domain_ref="EinsteinCommunicationDomainLibrary::SmcDomain">
+
+            <!-- ScLocalErrorState, sent by SC processes to SMC -->
+            <data_writer topic_ref="SC_SC_IF/ScLocalErrorState" name="ScLocalErrorStateWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteLongLivelinessQoS">
+                    <!-- NB: each writer writes only one instance -->
+                    <resource_limits>
+                        <max_instances>1</max_instances>
+                        <initial_instances>1</initial_instances>
+                        <max_samples>80</max_samples>
+                        <max_samples_per_instance>80</max_samples_per_instance>
+                    </resource_limits>
+                </datawriter_qos>
+            </data_writer>
+
+            <participant_qos base_name="EinsteinQoSProfileLibrary::EinsteinDefaultQoS">
+                <property inherit="true">
+                    <value>
+                        <element>
+                            <name>dds.transport.UDPv4.builtin.parent.allow_interfaces_list</name>
+                            <!-- NRT network address range is 192.168.0.* -->
+                            <value>192.168.0.*</value>
+                        </element>
+                        <element>
+                            <name>dds.transport.UDPv4.builtin.parent.deny_interfaces</name>
+                            <!-- The address range 192.168.33.* is a virtual network and should be excluded. -->
+                            <!-- The address ranges 192.168.56.* and 192.168.57.* are used to communicate
+                                 with the Galils and should be excluded. -->
+                            <value>192.168.1.*,192.168.33.*,192.168.56.*,192.168.57.*</value>
+                        </element>
+                    </value>
+                </property>
+            </participant_qos>
+        </domain_participant>
+
+    </participant_library>
+</dds>

@@ -29,10 +29,17 @@ using namespace application;
 
 void run_example(unsigned int domain_id, unsigned int sample_count)
 {
+    // Loads the QoS from the qos_profiles.xml file. 
+    dds::core::QosProvider qos_provider("../dds/USER_QOS_PROFILES.xml");
     // A DomainParticipant allows an application to begin communicating in
     // a DDS domain. Typically there is one DomainParticipant per application.
     // DomainParticipant QoS is configured in USER_QOS_PROFILES.xml
-    dds::domain::DomainParticipant participant(domain_id);
+    dds::domain::DomainParticipant participant(domain_id, 
+                                               qos_provider.participant_qos(
+                                               "UR5Controller_Library::UR5Controller_Profile"));
+    // check participant qos type
+    // auto qos = participant.qos();
+    // std::cout << "participant qos type: " << to_string(qos) << std::endl;
 
     // A Topic has a name and a datatype. Create a Topic named
     // "URController_Topic" with type URController

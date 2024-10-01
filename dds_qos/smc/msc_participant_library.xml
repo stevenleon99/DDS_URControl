@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<!-- Copyright 2018 Covidien LP -->
+<!-- All Rights Reserved. The information contained herein is confidential -->
+<!-- property of Covidien LP. The use, copying, transfer or disclosure of such -->
+<!-- information is prohibited except by express written agreement with Covidien LP. -->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="@CONNEXTDDS_RESOURCE_QOS_PROFILES_SCHEMA_DIR@/rti_dds_qos_profiles.xsd"
+    version="@CONNEXTDDS_FOUND_VERSION@">
+
+    <!-- This file defines the domain participant used by the MSC when communicating with the SMC. -->
+
+    <participant_library name="MscSmcParticipantLibrary">
+
+        <!-- Realtime SMC application domain participant -->
+        <domain_participant name="MscApplicationRealtimeParticipant"
+                            domain_id="@SMC_REALTIME_DOMAIN_ID@"
+                            domain_ref="EinsteinCommunicationDomainLibrary::SmcDomain">
+
+            <!-- Topics published by SMC -->
+            <!-- State Actual -->
+            <data_reader topic_ref="SMC/SmcStateActual" name="SmcStateActualReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_reader>
+
+            <!-- SwitchControls  -->
+            <data_reader topic_ref="SMC/SwitchControls" name="SwitchControlsReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"/>
+            </data_reader>
+
+            <!-- ScMode  -->
+            <data_reader topic_ref="SMC/ScMode" name="ScModeReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"/>
+            </data_reader>
+
+            <!-- Topics received by SMC -->
+            <!-- DisableErgonomics  -->
+            <data_writer topic_ref="MSC/DisableErgonomics" name="DisableErgonomicsWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></datawriter_qos>
+            </data_writer>
+
+            <!-- SmcHandleNotification  -->
+            <data_writer topic_ref="MSC/SmcHandleNotification" name="SmcHandleNotificationWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></datawriter_qos>
+            </data_writer>
+
+            <!-- Topics using best effort QoS profile -->
+            <!-- ForceFeedbackCommand, received by SMC -->
+            <data_writer topic_ref="MSC/ForceFeedbackCommand" name="ForceFeedbackCommandWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </data_writer>
+
+            <!-- HandleData, published by SMC  -->
+            <data_reader topic_ref="SMC/HandleData" name="HandleDataReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </data_reader>
+
+            <!-- DebugMsc, published by MSC  -->
+            <!--
+            <data_writer topic_ref="MSC/DebugMsc" name="DebugMscWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::EinsteinRealtimeControlData"/>
+            </data_writer>
+            -->
+
+            <!-- EnableSurgeonConsoleDeactivation, published by MSC -->
+            <data_writer topic_ref="MSC/EnableSurgeonConsoleDeactivation" name="SmcEnableSurgeonConsoleDeactivationWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedCriticalWriteQoS"></datawriter_qos>
+            </data_writer>
+
+            <participant_qos base_name="EinsteinQoSProfileLibrary::EinsteinDefaultQoS">
+                <event>
+                    <thread>
+                        <!--CYCLIC_RT_1KHZ = 185 minus 1 for event thread-->
+                        <priority>184</priority>
+                    </thread>
+                </event>
+                <receiver_pool>
+                    <thread>
+                        <!--CYCLIC_RT_1KHZ = 185-->
+                        <priority>185</priority>
+                    </thread>
+                </receiver_pool>
+            </participant_qos>
+
+        </domain_participant>
+
+        <!-- Non-Realtime SMC application domain participant -->
+        <domain_participant name="MscApplicationNonRealtimeParticipant"
+                            domain_id="@SMC_NONREALTIME_DOMAIN_ID@"
+                            domain_ref="EinsteinCommunicationDomainLibrary::SmcDomain">
+
+            <!-- HardwareConfigurationControl, published by *TSim* (sim_controller) only -->
+            <data_writer topic_ref="SMC_MSC_IF/HardwareConfigurationControl" name="SmcHardwareConfigurationControlWriter">
+                <datawriter_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_writer>
+
+            <!-- Ergonomic Level Actual  -->
+            <data_reader topic_ref="SC_GUI_IF/ErgonomicLevel/Actual" name="SmcErgonomicLevelActualReader">
+                <datareader_qos base_name="EinsteinQoSProfileLibrary::SmcKeyedReliableQoS"/>
+            </data_reader>
+
+            <participant_qos base_name="EinsteinQoSProfileLibrary::EinsteinDefaultQoS">
+                <event>
+                    <thread>
+                        <!--CYCLIC_RT_1KHZ = 185 minus 1 for event thread-->
+                        <priority>184</priority>
+                    </thread>
+                </event>
+                <receiver_pool>
+                    <thread>
+                        <!--CYCLIC_RT_1KHZ = 185-->
+                        <priority>185</priority>
+                    </thread>
+                </receiver_pool>
+            </participant_qos>
+
+        </domain_participant>
+
+    </participant_library>
+</dds>

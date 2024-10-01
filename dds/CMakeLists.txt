@@ -31,3 +31,19 @@ connextdds_add_example(
         "URController"
 )
 
+# # Specify the file you want to copy
+# set(SOURCE_FILE "USER_QOS_PROFILES.xml")
+
+# # Specify the destination directory (this is where the file will be copied to)
+# set(DESTINATION_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
+# # Create a custom command to copy the file
+# add_custom_command(
+#     OUTPUT ${DESTINATION_DIR}/${SOURCE_FILE}
+#     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SOURCE_FILE} ${DESTINATION_DIR}
+#     DEPENDS "${SOURCE_FILE}"
+#     COMMENT "Copying ${SOURCE_FILE} to ${DESTINATION_DIR}"
+# )
+
+# # Create a custom target to ensure the file is copied during the build
+# add_custom_target(copy_qos_file ALL DEPENDS ${DESTINATION_DIR}/${SOURCE_FILE})
