@@ -116,7 +116,6 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
         // when they activate
         // std::cout << "URController subscriber sleeping for 4 sec..."
         //           << std::endl;
-
         waitset.dispatch(dds::core::Duration(4));  // Wait up to 4s each time
     }
 
