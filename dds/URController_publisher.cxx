@@ -36,7 +36,7 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
     // DomainParticipant QoS is configured in USER_QOS_PROFILES.xml
     dds::domain::DomainParticipant participant(domain_id, 
                                                qos_provider.participant_qos(
-                                               "UR5Controller_Library::UR5Controller_Profile"));
+                                               "UR5Controller_Library::UR5Controller_Profile1"));
     // check participant qos type
     // auto qos = participant.qos();
     // std::cout << "participant qos type: " << to_string(qos) << std::endl;
@@ -51,7 +51,10 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
 
     // This DataWriter will write data on Topic "URController topic"
     // DataWriter QoS is configured in USER_QOS_PROFILES.xml
-    dds::pub::DataWriter<DesireJoint> writer(publisher, topic);
+    dds::pub::DataWriter<DesireJoint> writer(publisher, 
+                                             topic,
+                                             qos_provider.datawriter_qos(
+                                                "UR5Controller_Library::UR5Controller_Profile1"));
 
     // Create data sample for writing
     DesireJoint sample;
@@ -92,6 +95,7 @@ int main(int argc, char *argv[])
     rti::config::Logger::instance().verbosity(arguments.verbosity);
 
     try {
+        std::cout << "[INFO] publisher domain_id: " << arguments.domain_id << std::endl;
         run_example(arguments.domain_id, arguments.sample_count);
     } catch (const std::exception& ex) {
         // This will catch DDS exceptions

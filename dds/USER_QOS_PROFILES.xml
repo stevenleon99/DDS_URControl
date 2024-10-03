@@ -41,15 +41,15 @@
             These QoS profiles will be used as the default, as long as this
             file is in the working directory when running the example.
         -->
-        <qos_profile name="UR5Controller_Profile" 
-                     base_name="BuiltinQosLib::Generic.StrictReliable"
+        <qos_profile name="UR5Controller_Profile1" 
+                     base_name="BuiltinQosLib::Pattern.Streaming"
                      is_default_qos="true">
 
             <!-- QoS specified to override the QoS in the base profile.
                  Configures the DataWriter in the example code. -->
             <datawriter_qos>
                 <publication_name>
-                    <name>URControllerDataWriter</name>
+                    <name>URControllerDataWriter1</name>
                 </publication_name>
             </datawriter_qos>
 
@@ -57,7 +57,7 @@
                  Configures the DataReader in the example code. -->
             <datareader_qos>
                 <subscription_name>
-                    <name>URControllerDataReader</name>
+                    <name>URControllerDataReader1</name>
                 </subscription_name>
             </datareader_qos>
 
@@ -70,11 +70,45 @@
                 application from another when you're debugging.
                 -->
                 <participant_name>
-                    <name>URControllerParticipant</name>
+                    <name>URControllerParticipant1</name>
                 </participant_name>
 
             </domain_participant_qos>
         </qos_profile>
 
+
+        <qos_profile name="UR5Controller_Profile2" 
+                     base_name="BuiltinQosLib::Pattern.Status">
+
+            <!-- QoS specified to override the QoS in the base profile.
+                 Configures the DataWriter in the example code. -->
+            <datawriter_qos>
+                <publication_name>
+                    <name>URControllerDataWriter2</name>
+                </publication_name>
+            </datawriter_qos>
+
+            <!-- QoS specified to override the QoS in the base profile. 
+                 Configures the DataReader in the example code. -->
+            <datareader_qos>
+                <subscription_name>
+                    <name>URControllerDataReader2</name>
+                </subscription_name>
+            </datareader_qos>
+
+            <!-- QoS specified to override the QoS in the base profile. 
+                 Configures the DomainParticipant in the example code. -->
+            <domain_participant_qos>
+                <!--
+                The participant name, if it is set, will be displayed in the
+                RTI tools, making it easier for you to tell one
+                application from another when you're debugging.
+                -->
+                <participant_name>
+                    <name>URControllerParticipant2</name>
+                </participant_name>
+
+            </domain_participant_qos>
+        </qos_profile>
     </qos_library>
 </dds>

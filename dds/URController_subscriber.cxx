@@ -73,7 +73,7 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
     // Create a DomainParticipant with default Qos
     dds::domain::DomainParticipant participant(domain_id,
                                                qos_provider.participant_qos(
-                                               "UR5Controller_Library::UR5Controller_Profile"));
+                                               "UR5Controller_Library::UR5Controller_Profile2"));
 
     // A Topic has a name and a datatype. Create a Topic named
     // "URController Topic" with type URController
@@ -86,7 +86,10 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
     // This DataReader will read data of type URController on Topic
     // "URController Topic". DataReader QoS is configured in
     // USER_QOS_PROFILES.xml
-    dds::sub::DataReader<DesireJoint> reader(subscriber, topic);
+    dds::sub::DataReader<DesireJoint> reader(subscriber, 
+                                             topic,
+                                             qos_provider.datareader_qos(
+                                                "UR5Controller_Library::UR5Controller_Profile2"));
 
     // Obtain the DataReader's Status Condition
     dds::core::cond::StatusCondition status_condition(reader);
@@ -116,6 +119,7 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
         // when they activate
         // std::cout << "URController subscriber sleeping for 4 sec..."
         //           << std::endl;
+
         waitset.dispatch(dds::core::Duration(4));  // Wait up to 4s each time
     }
 
@@ -139,6 +143,7 @@ int main(int argc, char *argv[])
     rti::config::Logger::instance().verbosity(arguments.verbosity);
 
     try {
+        std::cout << "[INFO] subscriber domain_id: " << arguments.domain_id << std::endl;
         run_example(arguments.domain_id, arguments.sample_count);
     } catch (const std::exception& ex) {
         // All DDS exceptions inherit from std::exception
