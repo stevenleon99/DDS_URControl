@@ -24,8 +24,22 @@
 #include <dds/core/Time.hpp>
 #include <sys/time.h>
 
+// write data to file
+#include <fstream>
+#include <sstream>
+
+
 using namespace application;
 using Time = dds::core::Time;
+
+int writeFile(std::string msg) {
+    std::ofstream myfile;
+    myfile.open ("DDS_test.txt", std::ios::app);
+    myfile << msg;
+    myfile.close();
+    return 0;
+}
+
 
 inline Time getDDSTimeofday() {
     static const DDS_UnsignedLong USEC_to_NANOSEC = 1000UL;
@@ -57,11 +71,13 @@ unsigned int process_data(dds::sub::DataReader<DDSTestMessage>& reader, dds::pub
     for (const auto& sample : samples) {
         if (sample.info().valid()) {
             samples_read++;
+            std::stringstream ss;
             std::cout << sample.data() << std::endl;
-            std::cout << "sec: " << time.sec() << " nano: " \
-                << time.nanosec() << " diff. ms: ";
-            printf(" diff. ms: %.4f \n", (time.nanosec() - sample.data().timestamp())/MSEC_to_NANOSEC);
-            
+            ss << "sec, " << time.sec() << ",nano, " \
+                << time.nanosec() << ",diff. ms," \
+                << std::to_string((time.nanosec() - sample.data().timestamp())/MSEC_to_NANOSEC) << "\n";
+            writeFile(ss.str());
+
             sample_w.timestamp(time.nanosec());
             sample_w.msg(sample.data().msg());
             writer.write(sample_w);

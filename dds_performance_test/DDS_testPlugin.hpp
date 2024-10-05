@@ -10,8 +10,8 @@ For more information, type 'rtiddsgen -help' at a command shell
 or consult the Code Generator User's Manual.
 */
 
-#ifndef DDS_testPlugin_1934069323_h
-#define DDS_testPlugin_1934069323_h
+#ifndef DDS_testPlugin_1934069328_h
+#define DDS_testPlugin_1934069328_h
 
 #include "DDS_test.hpp"
 
@@ -191,5 +191,5 @@ DDSTestMessagePlugin_delete(struct PRESTypePlugin *);
 #define NDDSUSERDllExport
 #endif
 
-#endif /* DDS_testPlugin_1934069323_h */
+#endif /* DDS_testPlugin_1934069328_h */
 
