@@ -32,9 +32,13 @@
 using namespace application;
 using Time = dds::core::Time;
 
-int writeFile(std::string msg) {
+static const DDS_UnsignedLong USEC_to_NANOSEC = 1000UL;
+static const DDS_UnsignedLong SEC_to_NANOSEC = 1000000000UL;
+static const double MSEC_to_NANOSEC = 1000000UL;
+
+int writeFile(std::string msg, uint8_t number_node) {
     std::ofstream myfile;
-    myfile.open ("DDS_test.txt", std::ios::app);
+    myfile.open ("DDS_test.txt"+std::to_string(number_node), std::ios::app);
     myfile << msg;
     myfile.close();
     return 0;
@@ -42,7 +46,6 @@ int writeFile(std::string msg) {
 
 
 inline Time getDDSTimeofday() {
-    static const DDS_UnsignedLong USEC_to_NANOSEC = 1000UL;
     struct timeval tv;
 
     // Check if gettimeofday is successful
@@ -57,12 +60,13 @@ inline Time getDDSTimeofday() {
     return crtTime;
 }
 
-unsigned int process_data(dds::sub::DataReader<DDSTestMessage>& reader, dds::pub::DataWriter<DDSTestMessage>& writer)
+unsigned int process_data(dds::sub::DataReader<DDSTestMessage>& reader, 
+                          dds::pub::DataWriter<DDSTestMessage>& writer,
+                          u_int8_t number_node)
 {
     // Take all samples.  Samples are loaned to application, loan is
     // returned when LoanedSamples destructor called.
-    static const double MSEC_to_NANOSEC = 1000000UL;
-
+    
     unsigned int samples_read = 0;
     dds::sub::LoanedSamples<DDSTestMessage> samples = reader.take();
     auto time = getDDSTimeofday();
@@ -71,14 +75,16 @@ unsigned int process_data(dds::sub::DataReader<DDSTestMessage>& reader, dds::pub
     for (const auto& sample : samples) {
         if (sample.info().valid()) {
             samples_read++;
+            DDS_UnsignedLong preTime = sample.data().timestamp();
+            DDS_UnsignedLong curTime = time.nanosec()+time.sec()*SEC_to_NANOSEC;
+
             std::stringstream ss;
-            std::cout << sample.data() << std::endl;
             ss << "sec, " << time.sec() << ",nano, " \
                 << time.nanosec() << ",diff. ms," \
-                << std::to_string((time.nanosec() - sample.data().timestamp())/MSEC_to_NANOSEC) << "\n";
-            writeFile(ss.str());
+                << std::to_string((curTime - preTime)/MSEC_to_NANOSEC) << "\n";
+            writeFile(ss.str(), number_node);
 
-            sample_w.timestamp(time.nanosec());
+            sample_w.timestamp(curTime);
             sample_w.msg(sample.data().msg());
             writer.write(sample_w);
         }
@@ -88,7 +94,12 @@ unsigned int process_data(dds::sub::DataReader<DDSTestMessage>& reader, dds::pub
 }
 
 
-void run_example(unsigned int domain_id, unsigned int sample_count, const std::string topic_write, const std::string topic_read)
+void run_example(unsigned int domain_id, 
+                 unsigned int sample_count, 
+                 const std::string topic_write, 
+                 const std::string topic_read,
+                 const uint8_t number_node,
+                 const u_int32_t hertz)
 {
     // A DomainParticipant allows an application to begin communicating in
     // a DDS domain. Typically there is one DomainParticipant per application.
@@ -123,8 +134,8 @@ void run_example(unsigned int domain_id, unsigned int sample_count, const std::s
     // Associate a handler with the status condition. This will run when the
     // condition is triggered, in the context of the dispatch call (see below)
     unsigned int samples_read = 0;
-    status_condition.extensions().handler([&reader, &samples_read, &writer]() {
-        samples_read += process_data(reader, writer);
+    status_condition.extensions().handler([&reader, &samples_read, &writer, number_node]() {
+        samples_read += process_data(reader, writer, number_node);
     });
 
     // Create a WaitSet and attach the StatusCondition
@@ -137,7 +148,7 @@ void run_example(unsigned int domain_id, unsigned int sample_count, const std::s
         std::cout << "DDS_test subscriber sleeping for 4 sec..."
                   << std::endl;
 
-        waitset.dispatch(dds::core::Duration(4));  // Wait up to 4s each time
+        waitset.dispatch(dds::core::Duration(1/hertz));  // Wait up to 4s each time
     }
 }
 
@@ -156,7 +167,12 @@ int main(int argc, char *argv[])
     rti::config::Logger::instance().verbosity(arguments.verbosity);
 
     try {
-        run_example(arguments.domain_id, arguments.sample_count, arguments.topic_write, arguments.topic_read);
+        run_example(arguments.domain_id, 
+                    arguments.sample_count, 
+                    arguments.topic_write, 
+                    arguments.topic_read,
+                    arguments.number_node,
+                    arguments.hertz);
     } catch (const std::exception& ex) {
         // All DDS exceptions inherit from std::exception
         std::cerr << "Exception in run_example(): " << ex.what()

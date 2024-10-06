@@ -47,6 +47,8 @@ struct ApplicationArguments {
     unsigned int sample_count;
     std::string topic_read;
     std::string topic_write;
+    uint8_t number_node;
+    uint32_t hertz;
     rti::config::Verbosity verbosity;
 };
 
@@ -61,6 +63,8 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
     rti::config::Verbosity verbosity = rti::config::Verbosity::EXCEPTION;
     std::string topic_read;
     std::string topic_write;
+    uint8_t number_node;
+    uint32_t hertz;
 
     while (arg_processing < argc) {
         if ((argc > arg_processing + 1)
@@ -92,6 +96,18 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
             topic_write = argv[arg_processing + 1];
             std::cout << "input topic_write is: " << topic_write << std::endl;
             arg_processing += 2;
+        } else if ((argc > arg_processing + 1)
+                && (strcmp(argv[arg_processing], "-n") == 0
+                || strcmp(argv[arg_processing], "--numbernode") == 0)) {
+            number_node = atoi(argv[arg_processing + 1]);
+            std::cout << "input number_node is: " << number_node << std::endl;
+            arg_processing += 2;
+        } else if ((argc > arg_processing + 1)
+                && (strcmp(argv[arg_processing], "-hz") == 0
+                || strcmp(argv[arg_processing], "--hertz") == 0)) {
+            hertz = atoi(argv[arg_processing + 1]);
+            std::cout << "input hertz is: " << hertz << std::endl;
+            arg_processing += 2;
         } else if (strcmp(argv[arg_processing], "-h") == 0
                 || strcmp(argv[arg_processing], "--help") == 0) {
             std::cout << "Example application." << std::endl;
@@ -119,7 +135,7 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
                 << std::endl;
     }
 
-    return { parse_result, domain_id, sample_count, topic_read, topic_write, verbosity };
+    return { parse_result, domain_id, sample_count, topic_read, topic_write, number_node, hertz, verbosity };
 }
 
 }  // namespace application

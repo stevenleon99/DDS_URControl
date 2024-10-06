@@ -19,15 +19,39 @@
 #include "application.hpp"  // Argument parsing
 #include "DDS_test.hpp"
 
-
 #include <dds/core/Time.hpp>
 #include <sys/time.h>
+
+#include <fstream>
+#include <sstream>
 
 using namespace application;
 using Time = dds::core::Time;
 
+static const DDS_UnsignedLong USEC_to_NANOSEC = 1000UL;
+static const DDS_UnsignedLong SEC_to_NANOSEC = 1000000000UL;
+
+std::string readFile(){
+
+    std::ifstream file("../resource/500kb_test.txt");  // Open the file in read mode
+
+    if (!file.is_open()) {  // Check if the file opened successfully
+        std::cerr << "Unable to open file";
+        return "";
+    }
+
+    std::stringstream buffer;  // Create a stringstream to hold file contents
+    buffer << file.rdbuf();    // Read the whole file into the stringstream
+
+    std::string fileContents = buffer.str();  // Convert the stringstream to a string
+
+    file.close();  // Close the file
+    return fileContents;
+
+}
+
 inline Time getDDSTimeofday() {
-    static const DDS_UnsignedLong USEC_to_NANOSEC = 1000UL;
+    
     struct timeval tv;
 
     // Check if gettimeofday is successful
@@ -43,7 +67,11 @@ inline Time getDDSTimeofday() {
 }
 
 
-void run_example(unsigned int domain_id, unsigned int sample_count, const std::string topic_write, const std::string topic_read)
+void run_example(unsigned int domain_id, 
+    unsigned int sample_count, 
+    const std::string topic_write, 
+    const std::string topic_read,
+    const uint32_t hertz)
 {
     // A DomainParticipant allows an application to begin communicating in
     // a DDS domain. Typically there is one DomainParticipant per application.
@@ -74,11 +102,12 @@ void run_example(unsigned int domain_id, unsigned int sample_count, const std::s
         auto time = getDDSTimeofday();
         std::cout << "sec: " << time.sec() << " nano: " << time.nanosec() << std::endl;
 
-        sample.timestamp(time.nanosec());
-        sample.msg("Hello world! " + std::to_string(time.nanosec()));
+        sample.timestamp(time.nanosec()+time.sec()*SEC_to_NANOSEC);
+        // sample.msg("Hello world! " + std::to_string(time.nanosec()));
+        sample.msg(readFile());
         writer.write(sample);
         
-        rti::util::sleep(dds::core::Duration(4));
+        rti::util::sleep(dds::core::Duration(1/hertz));
     }
 
 }
@@ -99,7 +128,11 @@ int main(int argc, char *argv[])
     rti::config::Logger::instance().verbosity(arguments.verbosity);
 
     try {
-        run_example(arguments.domain_id, arguments.sample_count, arguments.topic_write, arguments.topic_read);
+        run_example(arguments.domain_id, 
+                    arguments.sample_count, 
+                    arguments.topic_write, 
+                    arguments.topic_read, 
+                    arguments.hertz);
     } catch (const std::exception& ex) {
         // This will catch DDS exceptions
         std::cerr << "Exception in run_example(): " << ex.what()
