@@ -16,7 +16,7 @@ $PubDir -tr "A" -tw "B" -n "1" -hz "${2}" &
 $SubDir -tr "B" -tw "C" -n "2" -hz "${2}" &
 $SubDir -tr "C" -tw "D" -n "3" -hz "${2}" &
 
-for ((i = 1; i <= $(($4*60)); i++)); do
+for ((i = 1; i <= $(($3*60)); i++)); do
     sleep "$i"   
 done
 
