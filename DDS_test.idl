@@ -2,5 +2,5 @@ struct DDSTestMessage {
     // stimestamp
     uint64 timestamp;
     // String with maximum length of 256 characters
-    string<50000000> msg;
+    string<500000000> msg;
 };

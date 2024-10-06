@@ -12,10 +12,10 @@ PubDir="../build/DDS_test_publisher"
 SubDir="../build/DDS_test_subscriber"
 topicBase="DDSTest_"
 
-$PubDir -tr "1" -tw "2" -n "1" -hz "${2}" &
+$PubDir -tr "1" -tw "2" -n "1" -hz "${2}" >/dev/null 2>&1 &
 for (( i=2; i<=$1; i++ ))
 do
-    $SubDir -tr "${i}" -tw "$((${i}+1))" -n "${i}" -hz "${2}" &
+    $SubDir -tr "${i}" -tw "$((${i}+1))" -n "${i}" -hz "${2}" >/dev/null 2>&1 &
 done
 
 for ((i = 1; i <= $(($3*60)); i++)); do

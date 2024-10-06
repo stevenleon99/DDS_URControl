@@ -33,7 +33,7 @@ static const DDS_UnsignedLong SEC_to_NANOSEC = 1000000000UL;
 
 std::string readFile(){
 
-    std::ifstream file("../resource/5M_test.txt");  // Open the file in read mode
+    std::ifstream file("../resource/1M_test.txt");  // Open the file in read mode
 
     if (!file.is_open()) {  // Check if the file opened successfully
         std::cerr << "Unable to open file";
