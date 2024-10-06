@@ -156,7 +156,7 @@ namespace rti {
 
                 is_initialized = RTI_TRUE;
 
-                DDSTestMessage_g_tc_msg_string = initialize_string_typecode((10000000L));
+                DDSTestMessage_g_tc_msg_string = initialize_string_typecode((50000000L));
 
                 DDSTestMessage_g_tc._data._annotations._allowedDataRepresentationMask = 5;
 
@@ -334,7 +334,7 @@ namespace dds {
 
         void topic_type_support< ::DDSTestMessage >::allocate_sample(::DDSTestMessage& sample, int, int) 
         {
-            ::rti::topic::allocate_sample(sample.msg(),  -1, 10000000L);
+            ::rti::topic::allocate_sample(sample.msg(),  -1, 50000000L);
         }
     }
 }  

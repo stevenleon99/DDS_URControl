@@ -19,6 +19,7 @@ do
 done
 
 for ((i = 1; i <= $(($3*60)); i++)); do
+    echo "count time sec: '$i'"
     sleep "$i"   
 done
 
