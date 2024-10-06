@@ -100,7 +100,7 @@ inline ApplicationArguments parse_arguments(int argc, char *argv[])
                 && (strcmp(argv[arg_processing], "-n") == 0
                 || strcmp(argv[arg_processing], "--numbernode") == 0)) {
             number_node = atoi(argv[arg_processing + 1]);
-            std::cout << "input number_node is: " << number_node << std::endl;
+            std::cout << "input number_node is: " << std::to_string(number_node) << std::endl;
             arg_processing += 2;
         } else if ((argc > arg_processing + 1)
                 && (strcmp(argv[arg_processing], "-hz") == 0
