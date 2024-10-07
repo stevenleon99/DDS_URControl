@@ -4,20 +4,20 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "rostest_msgs/msg/angle.hpp"
+#include "rostest_msgs/msg/dds_test_message.hpp"
 
 using std::placeholders::_1;
 
 namespace subscribe
 {
-    class MinimalSubscriber_slow : public rclcpp::Node
+    class RosSubscriber : public rclcpp::Node
     {
     public:
-        MinimalSubscriber_slow();
+        RosSubscriber(std::string subscriberName, std::string topicName);
 
     private:
-        void topic_callback_agl(const rostest_msgs::msg::Angle & message) const;
-        rclcpp::Subscription<rostest_msgs::msg::Angle>::SharedPtr subscription_a;
+        void topic_callback_msg(const rostest_msgs::msg::DdsTestMessage & message) const;
+        rclcpp::Subscription<rostest_msgs::msg::DdsTestMessage>::SharedPtr subscription_msg;
     };
         
 } // namespace subscribe

@@ -38,17 +38,17 @@ namespace subscribe
     return tv;
   }
 
-  MinimalSubscriber_slow::MinimalSubscriber_slow(): Node("minimal_subscriber_slow")
+  RosSubscriber::RosSubscriber(std::string subscriberName, std::string topicName): Node(subscriberName)
   {
-    subscription_a = this->create_subscription<rostest_msgs::msg::Angle>(
-      "angle", 10, std::bind(&MinimalSubscriber_slow::topic_callback_agl, this, _1));
+    subscription_msg = this->create_subscription<rostest_msgs::msg::DdsTestMessage>(
+      topicName, 10, std::bind(&RosSubscriber::topic_callback_msg, this, _1));
   }
 
-   void MinimalSubscriber_slow::topic_callback_agl(const rostest_msgs::msg::Angle & message) const
+   void RosSubscriber::topic_callback_msg(const rostest_msgs::msg::DdsTestMessage & message) const
   {
     auto timeval = getDDSTimeofday();
     uint64_t timestamp = timeval.tv_sec*SEC_to_NANOSEC + timeval.tv_usec*USEC_to_NANOSEC;
-    RCLCPP_INFO(this->get_logger(), "I heard angle: '%s', roll: %f, yall:%f, pitch:%f", message.name.c_str(),message.roll, message.yaw, message.pitch);
+    RCLCPP_INFO(this->get_logger(), "I heard message: '%s'", message.msg.c_str());
     RCLCPP_INFO(this->get_logger(), "I heard timestamp diff: %f", (timestamp-message.timestamp)/MSEC_to_NANOSEC);
     // sleep(5);
   }

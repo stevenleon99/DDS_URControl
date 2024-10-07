@@ -14,7 +14,7 @@
 int main(int argc, char * argv[])
 {
   rclcpp::init( argc, argv );
-  auto node_s = std::make_shared<subscribe::MinimalSubscriber_slow>();
+  auto node_s = std::make_shared<subscribe::RosSubscriber>("subscriber_node", "ur5");
   rclcpp::spin( node_s );
   rclcpp::shutdown();
   return 0;

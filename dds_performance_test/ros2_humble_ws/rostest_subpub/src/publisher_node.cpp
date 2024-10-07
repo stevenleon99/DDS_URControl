@@ -17,12 +17,12 @@ int main(int argc, char const *argv[])
 {
     rclcpp::init(argc, argv);
     
-    publish::MinimalPublisher publisher;
+    publish::RosPublisher publisher("publish_node", "ur5");
     rclcpp::Rate rate_1(1);
     
 
     while(rclcpp::ok()){
-        publisher.publish_agl("UR5", publisher.count_a++, 2.0, 2.0);
+        publisher.publish_msg();
         rate_1.sleep();
     }
 

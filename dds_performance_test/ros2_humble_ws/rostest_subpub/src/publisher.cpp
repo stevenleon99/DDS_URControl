@@ -33,22 +33,20 @@ namespace publish
     return tv;
   }
 
-  MinimalPublisher::MinimalPublisher()
-  : Node("minimal_publisher"), count_p(0), count_a(0)
+  RosPublisher::RosPublisher(std::string publisherName, std::string topicName)
+  : Node(publisherName), count_p(0), count_a(0)
   {
-    publisher_agl = this->create_publisher<rostest_msgs::msg::Angle>("angle", 10);
+    publisher_msg = this->create_publisher<rostest_msgs::msg::DdsTestMessage>(topicName, 1);
   }
 
-  void MinimalPublisher::publish_agl(std::string name, double roll, double pitch, double yaw) const {
+  void RosPublisher::publish_msg() {
     auto timestamp = getDDSTimeofday();
-    auto message_a = rostest_msgs::msg::Angle();
-    message_a.name = name;
-    message_a.pitch = pitch;
-    message_a.roll = roll;
-    message_a.yaw = yaw;
+    RosPublisher::count_p++;
+    auto message_a = rostest_msgs::msg::DdsTestMessage();
+    message_a.msg = "UR5_" + std::to_string(RosPublisher::count_p);
     message_a.timestamp = timestamp.tv_sec*SEC_to_NANOSEC + timestamp.tv_usec*USEC_to_NANOSEC;
-    RCLCPP_INFO(this->get_logger(), "Publishing Angle: '%s', roll: %f, yall:%f, pitch:%f", message_a.name.c_str(),message_a.roll, message_a.yaw, message_a.pitch);
-    publisher_agl->publish(message_a);
+    RCLCPP_INFO(this->get_logger(), "Publishing message: '%s'", message_a.msg.c_str());
+    publisher_msg->publish(message_a);
   }
 
 } // namespace publish

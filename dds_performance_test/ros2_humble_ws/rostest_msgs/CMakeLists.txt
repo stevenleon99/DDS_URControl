@@ -11,7 +11,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces( ${PROJECT_NAME} 
-                            "msg/Angle.msg"  
+                            "msg/DdsTestMessage.msg"  
                             DEPENDENCIES geometry_msgs )
 
 if(BUILD_TESTING)
