@@ -18,6 +18,7 @@ namespace publish
     private:
         // void timer_callback();
         // rclcpp::TimerBase::SharedPtr timer_;
+        std::string File;
         rclcpp::Publisher<rostest_msgs::msg::DdsTestMessage>::SharedPtr publisher_msg;
     };
     
