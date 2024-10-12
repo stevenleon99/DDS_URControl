@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'URController'.
 //
-// Model version                  : 1.53
+// Model version                  : 1.79
 // Simulink Coder version         : 9.9 (R2023a) 19-Nov-2022
-// C/C++ source code generated on : Thu Sep 26 20:51:00 2024
+// C/C++ source code generated on : Sat Sep 28 15:46:24 2024
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Custom

@@ -36,7 +36,7 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
     // DomainParticipant QoS is configured in USER_QOS_PROFILES.xml
     dds::domain::DomainParticipant participant(domain_id, 
                                                qos_provider.participant_qos(
-                                               "UR5Controller_Library::UR5Controller_Profile1"));
+                                               "UR5Controller_Library::UR5Controller_Profile2"));
     // check participant qos type
     // auto qos = participant.qos();
     // std::cout << "participant qos type: " << to_string(qos) << std::endl;
@@ -54,7 +54,7 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
     dds::pub::DataWriter<DesireJoint> writer(publisher, 
                                              topic,
                                              qos_provider.datawriter_qos(
-                                                "UR5Controller_Library::UR5Controller_Profile1"));
+                                                "UR5Controller_Library::UR5Controller_Profile2"));
 
     // Create data sample for writing
     DesireJoint sample;
