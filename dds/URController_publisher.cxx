@@ -26,7 +26,6 @@
 
 using namespace application;
 
-
 void run_example(unsigned int domain_id, unsigned int sample_count)
 {
     // Loads the QoS from the qos_profiles.xml file. 
@@ -73,7 +72,7 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
 
         writer.write(sample);
 
-        rti::util::sleep(dds::core::Duration(4));
+        rti::util::sleep(dds::core::Duration(0.001));
     }
 
 }
