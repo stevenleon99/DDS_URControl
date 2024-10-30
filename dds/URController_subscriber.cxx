@@ -55,7 +55,7 @@ unsigned int process_data(dds::sub::DataReader<DesireJoint>& reader)
             samples_read++;
             std::cout << "receive desiredJoint data: " << sample.data() << std::endl;
             DDSin_to_Matlabin(rtObj, sample);
-            rt_OneStep();
+            for (auto i=0; i<4; i++) {rt_OneStep();} // 4khz for robot movement
             for (double i : rtObj.getExternalOutputs().actual_theta_arr) {std::cout << i << std::setw(3) << "  ";}
             std::cout << std::endl;
         }
