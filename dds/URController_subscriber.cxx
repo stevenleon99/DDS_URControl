@@ -25,7 +25,6 @@
 #include "../Matlab_URController/URController.h"
 #include "convert.h"
 
-
 using namespace application;
 
 static URController rtObj;             // Instance of model class
@@ -43,7 +42,6 @@ void rt_OneStep(void)
   OverrunFlag = false;
 }
 
-
 unsigned int process_data(dds::sub::DataReader<DesireJoint>& reader)
 {
     // Take all samples.  Samples are loaned to application, loan is
@@ -53,7 +51,8 @@ unsigned int process_data(dds::sub::DataReader<DesireJoint>& reader)
     for (const auto& sample : samples) {
         if (sample.info().valid()) {
             samples_read++;
-            std::cout << "receive desiredJoint data: " << sample.data() << std::endl;
+            std::cout << "receive desiredJoint data: " << sample.data()<< std::endl;
+            writeshmio(sample);
             DDSin_to_Matlabin(rtObj, sample);
             for (auto i=0; i<4; i++) {rt_OneStep();} // 4khz for robot movement
             for (double i : rtObj.getExternalOutputs().actual_theta_arr) {std::cout << i << std::setw(3) << "  ";}

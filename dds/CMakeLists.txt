@@ -5,6 +5,11 @@
 # This code contains trade secrets of Real-Time Innovations, Inc.
 cmake_minimum_required(VERSION 3.11)
 
+# find required package
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+
+
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -14,9 +19,11 @@ set(CMAKE_MODULE_PATH
 )
 
 message(STATUS "CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
+message(STATUS ${Boost_LIBRARIES})
 
 # Include ConnextDdsAddExample.cmake from resources/cmake
 include(ConnextDdsAddExample)
+include_directories(${Boost_INCLUDE_DIRS})
 
 connextdds_add_example(
     IDL "URController"
@@ -29,6 +36,7 @@ connextdds_add_example(
     DEPENDENCIES
         "captureMouse" 
         "URController"
+        ${Boost_LIBRARIES}
 )
 
 # # Specify the file you want to copy
