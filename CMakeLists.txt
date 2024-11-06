@@ -9,4 +9,4 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)   # For static libra
 add_subdirectory(Matlab_URController)
 add_subdirectory(mouse_movement)
 add_subdirectory(dds)
-
+add_subdirectory(displaywindow)
