@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'URController'.
 //
-// Model version                  : 1.222
+// Model version                  : 1.235
 // Simulink Coder version         : 9.9 (R2023a) 19-Nov-2022
-// C/C++ source code generated on : Fri Oct 25 19:41:48 2024
+// C/C++ source code generated on : Wed Nov  6 19:45:33 2024
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Custom
@@ -18,6 +18,27 @@
 //
 #ifndef RTW_HEADER_URController_types_h_
 #define RTW_HEADER_URController_types_h_
+#include "rtwtypes.h"
+#ifndef struct_emxArray_real_T_1x1x1
+#define struct_emxArray_real_T_1x1x1
+
+struct emxArray_real_T_1x1x1
+{
+  real_T data;
+  int32_T size[3];
+};
+
+#endif                                 // struct_emxArray_real_T_1x1x1
+
+#ifndef struct_cell_wrap_7
+#define struct_cell_wrap_7
+
+struct cell_wrap_7
+{
+  emxArray_real_T_1x1x1 f1;
+};
+
+#endif                                 // struct_cell_wrap_7
 #endif                                 // RTW_HEADER_URController_types_h_
 
 //

@@ -52,11 +52,14 @@ unsigned int process_data(dds::sub::DataReader<DesireJoint>& reader)
         if (sample.info().valid()) {
             samples_read++;
             std::cout << "receive desiredJoint data: " << sample.data()<< std::endl;
-            writeshmio(sample);
             DDSin_to_Matlabin(rtObj, sample);
             for (auto i=0; i<4; i++) {rt_OneStep();} // 4khz for robot movement
-            for (double i : rtObj.getExternalOutputs().actual_theta_arr) {std::cout << i << std::setw(3) << "  ";}
+            for (double i : rtObj.getExternalOutputs().actual_theta_arr) {std::cout << "theta: " << i << std::setw(3) << "  " << std::endl;}
+            for (double i : rtObj.getExternalOutputs().Output) {std::cout << "position: " << i << std::setw(3) << "  " << std::endl;}
             std::cout << std::endl;
+            std::vector<double> vec;
+            for (auto i : rtObj.getExternalOutputs().Output){vec.push_back(i);}
+            writeshmio(vec);
         }
     }
 

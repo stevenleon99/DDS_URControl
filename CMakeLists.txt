@@ -10,3 +10,9 @@ add_subdirectory(Matlab_URController)
 add_subdirectory(mouse_movement)
 add_subdirectory(dds)
 add_subdirectory(displaywindow)
+
+# Path to your shell script
+set(SCRIPT_NAME "/home/steve/rticonnextdds-getting-started/DDS_URControl/script/run.sh")
+
+# Install the shell script to the "bin" directory
+install(FILES ${SCRIPT_NAME} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} PERMISSIONS OWNER_EXECUTE OWNER_READ GROUP_EXECUTE WORLD_EXECUTE)

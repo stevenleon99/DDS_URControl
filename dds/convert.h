@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstring>
 #include <sstream>
+#include <vector>
 
 using namespace boost::interprocess;
 
@@ -45,5 +46,31 @@ void writeshmio(DesireJoint mem){
     // Write data into the shared memory
     std::memcpy(region.get_address(), message, sizeof(message));
 
-    std::cout << "Message written to shared memory: " << message << std::endl;
+    std::cout << "Message DesireJoint written to shared memory: " << message << std::endl;
+}
+
+void writeshmio(const std::vector<double> vec){
+    shared_memory_object::remove("position");
+
+    shared_memory_object shm(create_only, "position", read_write);
+    shm.truncate(1024);
+    mapped_region region(shm, read_write);
+
+    std::ostringstream oss;
+
+    for (size_t i = 0; i < vec.size(); ++i) {
+        oss << vec[i];
+        if (i != vec.size() - 1) {
+            oss << ",";
+        }
+    }
+
+    std::string result = oss.str();
+    char message[result.size() + 1];
+    std::strcpy(message, result.c_str());
+
+    // Write data into the shared memory
+    std::memcpy(region.get_address(), message, sizeof(message));
+
+    std::cout << "Message vector written to shared memory: " << message << std::endl;
 }
