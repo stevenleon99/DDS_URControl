@@ -44,7 +44,7 @@
         <qos_profile name="hello_world_Profile" 
                      base_name="BuiltinQosLib::Pattern.Streaming"
                      is_default_qos="true">
-
+            
             <!-- QoS specified to override the QoS in the base profile.
                  Configures the DataWriter in the example code. -->
             <datawriter_qos>

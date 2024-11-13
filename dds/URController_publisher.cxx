@@ -13,18 +13,22 @@
 #include <iostream>
 
 #include <dds/pub/ddspub.hpp>
+#include <dds/core/Time.hpp>
 #include <rti/util/util.hpp>  // for sleep()
 #include <rti/config/Logger.hpp>  // for logging
 // Or simply include <dds/dds.hpp> 
 
 #include "URController.hpp"
 #include "application.hpp"  // Argument parsing
+#include "writeData.hpp"
 
+#include <sys/time.h>
 
 #include "../mouse_movement/captureMouse.hpp"
 
 
 using namespace application;
+
 
 void run_example(unsigned int domain_id, unsigned int sample_count)
 {
@@ -67,6 +71,14 @@ void run_example(unsigned int domain_id, unsigned int sample_count)
         // Modify the data to be written here
         sample.oriThetaArr({0, 1.57, 0, 0, -1.57, 0});
         sample.desiredPosArr({xy[0], xy[1], -0.2, 1.56, 1.48, 2.93});
+        
+        // write to txt file
+        std::stringstream ss;
+        auto curTime = getTime();
+        ss << std::to_string(curTime.tv_sec * SEC_to_USEC + curTime.tv_usec) << "," \
+           << std::to_string(xy[0]) << ","  \
+           << std::to_string(xy[1]) << "\n";
+        writeFile(ss.str(), "dds_demo_input.txt");
 
         std::cout << "Writing desiredJoint, count " << count << std::endl;
 

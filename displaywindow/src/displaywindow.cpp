@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <random>
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -25,10 +26,15 @@ std::vector<glm::vec3> mousePositions;
 
 std::vector<float> scaleCoordinate(const std::vector<float> in) {
     std::vector<float> res;
+
+    std::random_device rd2;  // Seed the random number generator
+    std::mt19937 gen2(rd2()); // Mersenne Twister engine
+    std::uniform_real_distribution<> dis2(-0.01, 0.01); // Range between -1 and 1
+
     if (in[0] > 0.3 && in[0] < 0.6 && in[1] > 0.13 && in[1] < 0.44) {
-        res.push_back(( in[0] - 0.45  ) * 5.0 / 0.3); // map between -1 to 1
-        res.push_back(-( in[1] - 0.285 ) * 5.0 / 0.3); // map between -1 to 1
-        res.push_back( in[2] );
+        res.push_back( ( in[0] - 0.45  ) * 5.0 / 0.3 ); // map between -1 to 1
+        res.push_back(-( in[1] - 0.285 ) * 5.0 / 0.3 ); // map between -1 to 1
+        res.push_back( ( in[2] ) );
     } else {
         return {-2,-2,-2};
     }
@@ -40,6 +46,11 @@ void parseMemory(const char* mem){
     std::istringstream stream(mem);
     std::string item;
     std::vector<std::string> items;
+
+    std::random_device rd;  // Seed the random number generator
+    std::mt19937 gen(rd()); // Mersenne Twister engine
+    std::uniform_real_distribution<> dis(-0.01, 0.01); // Range between -1 and 1
+
 
     while (std::getline(stream, item, ',')) {
         items.push_back(item);
@@ -62,6 +73,7 @@ void parseMemory(const char* mem){
 
     mousePositions.push_back(glm::vec3(scale_coord[0], 
                                        scale_coord[1], 
+                                    //    dis(gen)
                                        scale_coord[2]));
 }
 

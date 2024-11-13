@@ -23,7 +23,7 @@ static const uint32_t SEC_to_NANOSEC = 1000000000UL;
 
 std::string readFile(){
 
-    std::ifstream file("/home/steve/rticonnextdds-getting-started/DDS_URControl/dds_performance_test/resource/128b_test.txt");  // Open the file in read mode
+    std::ifstream file("/home/steve/rticonnextdds-getting-started/DDS_URControl/dds_performance_test/resource/1M_test.txt");  // Open the file in read mode
 
     if (!file.is_open()) {  // Check if the file opened successfully
         std::cerr << "Unable to open file";
@@ -59,7 +59,9 @@ namespace publish
   RosPublisher::RosPublisher(std::string publisherName, std::string topicName)
   : Node(publisherName), count_p(0), count_a(0)
   {
-    publisher_msg = this->create_publisher<rostest_msgs::msg::DdsTestMessage>(topicName, 1);
+    rclcpp::QoS qos_profile(10);
+    qos_profile.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+    publisher_msg = this->create_publisher<rostest_msgs::msg::DdsTestMessage>(topicName, qos_profile);
     RosPublisher::File = readFile();
   }
 

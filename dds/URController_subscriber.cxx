@@ -22,8 +22,10 @@
 #include "application.hpp"  // Argument parsing
 
 #include <stdio.h>
+#include <math.h>
 #include "../Matlab_URController/URController.h"
 #include "convert.h"
+#include "writeData.hpp"
 
 using namespace application;
 
@@ -60,6 +62,18 @@ unsigned int process_data(dds::sub::DataReader<DesireJoint>& reader)
             std::vector<double> vec;
             for (auto i : rtObj.getExternalOutputs().Output){vec.push_back(i);}
             writeshmio(vec);
+            // write to txt file
+            // write to txt file
+            std::stringstream ss;
+            auto curTime = getTime();
+            ss << std::to_string(curTime.tv_sec * SEC_to_USEC + curTime.tv_usec) << "," \
+            << std::to_string(rtObj.getExternalOutputs().Output[0]) << ","  \
+            << std::to_string(rtObj.getExternalOutputs().Output[1]) << "," \
+            << "error_x," \
+            << std::to_string(abs(rtObj.getExternalOutputs().Output[0] - sample.data().desiredPosArr()[0])) << "," \
+            << "error_y," \
+            << std::to_string(abs(rtObj.getExternalOutputs().Output[1] - sample.data().desiredPosArr()[1])) <<"\n";
+            writeFile(ss.str(), "dds_demo_output.txt");
         }
     }
 

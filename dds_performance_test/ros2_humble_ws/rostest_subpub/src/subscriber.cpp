@@ -52,9 +52,11 @@ namespace subscribe
   RosSubscriber::RosSubscriber(std::string subscriberName, uint8_t node_number, std::string topicName, std::string topicName_pub): 
     Node(subscriberName), node_number(node_number)
   {
-    RosSubscriber::publisher_msg = this->create_publisher<rostest_msgs::msg::DdsTestMessage>(topicName_pub, 1);
+    rclcpp::QoS qos_profile(10);
+    qos_profile.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+    RosSubscriber::publisher_msg = this->create_publisher<rostest_msgs::msg::DdsTestMessage>(topicName_pub, qos_profile);
     RosSubscriber::subscription_msg = this->create_subscription<rostest_msgs::msg::DdsTestMessage>(
-      topicName, 10, std::bind(&RosSubscriber::topic_callback_msg, this, _1));
+      topicName, qos_profile, std::bind(&RosSubscriber::topic_callback_msg, this, _1));
   }
 
    void RosSubscriber::topic_callback_msg(const rostest_msgs::msg::DdsTestMessage & message) const
