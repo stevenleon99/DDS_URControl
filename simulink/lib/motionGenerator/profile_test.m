@@ -4,7 +4,7 @@ close all
 clc
 
 % input the maxvelocity, maxacceleration and init_pos
-MG = MotionGenerator(1000,5000,0);
+MG = MotionGenerator(1000,1000,0);
 
 r = randi([-180,180],5,1);
 tr = linspace(0,5,length(r));

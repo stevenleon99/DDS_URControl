@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'URController'.
 //
-// Model version                  : 1.235
+// Model version                  : 1.277
 // Simulink Coder version         : 9.9 (R2023a) 19-Nov-2022
-// C/C++ source code generated on : Wed Nov  6 19:45:33 2024
+// C/C++ source code generated on : Wed Nov 20 00:49:24 2024
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Generic->Custom
@@ -102,6 +102,36 @@ void URController::rt_ertODEUpdateContinuousStates(RTWSolverInfo *si )
   }
 
   rtsiSetSimTimeStep(si,MAJOR_TIME_STEP);
+}
+
+//
+// Output and update for atomic system:
+//    '<S7>/velConvert'
+//    '<S8>/velConvert'
+//    '<S9>/velConvert'
+//    '<S10>/velConvert'
+//    '<S11>/velConvert'
+//    '<S12>/velConvert'
+//
+void URController::velConvert(real_T rtu_vol, real_T rtu_maxVel, real_T
+  rtu_maxVol, real_T *rty_vel)
+{
+  *rty_vel = rtu_vol / rtu_maxVol * rtu_maxVel;
+}
+
+//
+// Output and update for atomic system:
+//    '<S7>/voltageConvert'
+//    '<S8>/voltageConvert'
+//    '<S9>/voltageConvert'
+//    '<S10>/voltageConvert'
+//    '<S11>/voltageConvert'
+//    '<S12>/voltageConvert'
+//
+void URController::voltageConvert(real_T rtu_vel, real_T rtu_maxVel, real_T
+  rtu_maxVol, real_T *rty_voltage)
+{
+  *rty_voltage = rtu_vel / rtu_maxVel * rtu_maxVol;
 }
 
 //
@@ -583,17 +613,16 @@ void URController::step()
   real_T d_p_data[3];
   real_T e_p_data[3];
   real_T f_p_data[3];
-  real_T R_0;
   real_T a_1;
+  real_T a_2;
+  real_T a_3;
+  real_T b_tmp;
+  real_T c_a_3;
+  real_T c_a_4;
   real_T cy;
   real_T cy_data;
   real_T phi;
   real_T psi;
-  real_T rtb_TransferFcn10;
-  real_T rtb_TransferFcn11;
-  real_T rtb_TransferFcn12;
-  real_T rtb_TransferFcn9;
-  real_T s;
   real_T varargin_1_data;
   real_T x_data;
   int32_T cy_size[3];
@@ -609,7 +638,7 @@ void URController::step()
   int8_T R_tmp[9];
   int8_T b_I[9];
   int8_T p05_tmp[4];
-  int8_T b_tmp[3];
+  int8_T b_tmp_0[3];
   int8_T csz_idx_2;
   if (rtmIsMajorTimeStep((&rtM))) {
     // set solver stop time
@@ -632,19 +661,19 @@ void URController::step()
   rtb_gd[15] = 1.0;
   phi = std::sin(rtU.desire_pos_orient_arr[3]);
   psi = std::cos(rtU.desire_pos_orient_arr[3]);
-  rtb_TransferFcn9 = std::sin(rtU.desire_pos_orient_arr[4]);
-  rtb_TransferFcn10 = std::cos(rtU.desire_pos_orient_arr[4]);
-  rtb_TransferFcn11 = std::sin(rtU.desire_pos_orient_arr[5]);
-  rtb_TransferFcn12 = std::cos(rtU.desire_pos_orient_arr[5]);
+  cy = std::sin(rtU.desire_pos_orient_arr[4]);
+  b_tmp = std::cos(rtU.desire_pos_orient_arr[4]);
+  c_a_3 = std::sin(rtU.desire_pos_orient_arr[5]);
+  c_a_4 = std::cos(rtU.desire_pos_orient_arr[5]);
   R[1] = 0.0;
   R[4] = psi;
   R[7] = -phi;
   R[2] = 0.0;
   R[5] = phi;
   R[8] = psi;
-  b_R[0] = rtb_TransferFcn10;
+  b_R[0] = b_tmp;
   b_R[3] = 0.0;
-  b_R[6] = rtb_TransferFcn9;
+  b_R[6] = cy;
   rtb_gd[12] = rtU.desire_pos_orient_arr[0];
   R[0] = 1.0;
   b_R[1] = 0.0;
@@ -654,22 +683,22 @@ void URController::step()
   rtb_gd[14] = rtU.desire_pos_orient_arr[2];
   R[6] = 0.0;
   b_R[7] = 0.0;
-  b_R[2] = -rtb_TransferFcn9;
+  b_R[2] = -cy;
   b_R[5] = 0.0;
-  b_R[8] = rtb_TransferFcn10;
-  c_R[0] = rtb_TransferFcn12;
-  c_R[3] = -rtb_TransferFcn11;
+  b_R[8] = b_tmp;
+  c_R[0] = c_a_4;
+  c_R[3] = -c_a_3;
   c_R[6] = 0.0;
-  c_R[1] = rtb_TransferFcn11;
-  c_R[4] = rtb_TransferFcn12;
+  c_R[1] = c_a_3;
+  c_R[4] = c_a_4;
   c_R[7] = 0.0;
   for (p05_tmp_0 = 0; p05_tmp_0 < 3; p05_tmp_0++) {
     psi = R[p05_tmp_0 + 3];
-    phi = R[p05_tmp_0];
-    rtb_TransferFcn9 = R[p05_tmp_0 + 6];
+    cy = R[p05_tmp_0];
+    phi = R[p05_tmp_0 + 6];
     for (xpageoffset = 0; xpageoffset < 3; xpageoffset++) {
       b_0[p05_tmp_0 + 3 * xpageoffset] = (b_R[3 * xpageoffset + 1] * psi + b_R[3
-        * xpageoffset] * phi) + b_R[3 * xpageoffset + 2] * rtb_TransferFcn9;
+        * xpageoffset] * cy) + b_R[3 * xpageoffset + 2] * phi;
     }
 
     c_R[3 * p05_tmp_0 + 2] = d[p05_tmp_0];
@@ -678,10 +707,10 @@ void URController::step()
   for (p05_tmp_0 = 0; p05_tmp_0 < 3; p05_tmp_0++) {
     phi = c_R[3 * p05_tmp_0 + 1];
     psi = c_R[3 * p05_tmp_0];
-    rtb_TransferFcn9 = c_R[3 * p05_tmp_0 + 2];
+    cy = c_R[3 * p05_tmp_0 + 2];
     for (xpageoffset = 0; xpageoffset < 3; xpageoffset++) {
       rtb_gd[xpageoffset + (p05_tmp_0 << 2)] = (b_0[xpageoffset + 3] * phi + psi
-        * b_0[xpageoffset]) + b_0[xpageoffset + 6] * rtb_TransferFcn9;
+        * b_0[xpageoffset]) + b_0[xpageoffset + 6] * cy;
     }
   }
 
@@ -698,15 +727,15 @@ void URController::step()
 
   psi = std::atan2(p05[1], p05[0]);
   phi = std::acos(0.1093 / std::sqrt(p05[1] * p05[1] + p05[0] * p05[0]));
-  rtb_TransferFcn9 = (psi + 1.5707963267948966) + phi;
-  rtb_theta[0] = rtb_TransferFcn9;
+  cy = (psi + 1.5707963267948966) + phi;
+  rtb_theta[0] = cy;
   psi = (psi + 1.5707963267948966) - phi;
   rtb_theta[24] = psi;
-  rtb_theta[6] = rtb_TransferFcn9;
+  rtb_theta[6] = cy;
   rtb_theta[30] = psi;
-  rtb_theta[12] = rtb_TransferFcn9;
+  rtb_theta[12] = cy;
   rtb_theta[36] = psi;
-  rtb_theta[18] = rtb_TransferFcn9;
+  rtb_theta[18] = cy;
   rtb_theta[42] = psi;
   for (i = 0; i < 2; i++) {
     for (p05_tmp_0 = 0; p05_tmp_0 < 16; p05_tmp_0++) {
@@ -721,13 +750,13 @@ void URController::step()
     b_b[12] = 0.0;
     rtb_theta_tmp = i << 2;
     psi = rtb_theta[rtb_theta_tmp * 6];
-    rtb_TransferFcn10 = std::sin(psi);
-    phi = std::cos(psi);
-    b[0] = phi;
-    b[4] = -rtb_TransferFcn10;
+    b_tmp = std::sin(psi);
+    cy = std::cos(psi);
+    b[0] = cy;
+    b[4] = -b_tmp;
     b[8] = 0.0;
-    b[1] = rtb_TransferFcn10;
-    b[5] = phi;
+    b[1] = b_tmp;
+    b[5] = cy;
     b[9] = 0.0;
     for (p05_tmp_0 = 0; p05_tmp_0 < 3; p05_tmp_0++) {
       xpageoffset = p05_tmp_0 << 2;
@@ -738,37 +767,34 @@ void URController::step()
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * s + b[c_a_tmp_1] *
-          rtb_TransferFcn9) + b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
+          b_tmp) + b[c_a_tmp_1 + 2] * c_a_3) + b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_0[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_0[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_0[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_0[p05_tmp_0 + 12];
+      cy = c_a_0[p05_tmp_0 + 4];
+      b_tmp = c_a_0[p05_tmp_0];
+      c_a_3 = c_a_0[p05_tmp_0 + 8];
+      c_a_4 = c_a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * s + b_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1]
+          * b_tmp) + b_b[c_a_tmp_1 + 2] * c_a_3) + b_b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_1[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_1[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_1[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_1[p05_tmp_0 + 12];
+      cy = c_a_1[p05_tmp_0 + 4];
+      b_tmp = c_a_1[p05_tmp_0];
+      c_a_3 = c_a_1[p05_tmp_0 + 8];
+      c_a_4 = c_a_1[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * s + c_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + c_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          c_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1]
+          * b_tmp) + c_b[c_a_tmp_1 + 2] * c_a_3) + c_b[c_a_tmp_1 + 3] * c_a_4;
       }
     }
 
@@ -776,13 +802,13 @@ void URController::step()
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
       phi = a[p05_tmp_0 + 4];
       psi = a[p05_tmp_0];
-      rtb_TransferFcn9 = a[p05_tmp_0 + 8];
-      rtb_TransferFcn10 = a[p05_tmp_0 + 12];
+      cy = a[p05_tmp_0 + 8];
+      b_tmp = a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
         c_b[p05_tmp_0 + c_a_tmp_1] = ((rtb_gd[c_a_tmp_1 + 1] * phi +
-          rtb_gd[c_a_tmp_1] * psi) + rtb_gd[c_a_tmp_1 + 2] * rtb_TransferFcn9) +
-          rtb_gd[c_a_tmp_1 + 3] * rtb_TransferFcn10;
+          rtb_gd[c_a_tmp_1] * psi) + rtb_gd[c_a_tmp_1 + 2] * cy) +
+          rtb_gd[c_a_tmp_1 + 3] * b_tmp;
       }
     }
 
@@ -808,13 +834,13 @@ void URController::step()
     i = b_i << 1;
     rtb_theta_tmp = i * 6;
     psi = rtb_theta[rtb_theta_tmp];
-    rtb_TransferFcn10 = std::sin(psi);
-    phi = std::cos(psi);
-    b[0] = phi;
-    b[4] = -rtb_TransferFcn10;
+    b_tmp = std::sin(psi);
+    cy = std::cos(psi);
+    b[0] = cy;
+    b[4] = -b_tmp;
     b[8] = 0.0;
-    b[1] = rtb_TransferFcn10;
-    b[5] = phi;
+    b[1] = b_tmp;
+    b[5] = cy;
     b[9] = 0.0;
     for (p05_tmp_0 = 0; p05_tmp_0 < 3; p05_tmp_0++) {
       xpageoffset = p05_tmp_0 << 2;
@@ -825,50 +851,47 @@ void URController::step()
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * s + b[c_a_tmp_1] *
-          rtb_TransferFcn9) + b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
+          b_tmp) + b[c_a_tmp_1 + 2] * c_a_3) + b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_0[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_0[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_0[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_0[p05_tmp_0 + 12];
+      cy = c_a_0[p05_tmp_0 + 4];
+      b_tmp = c_a_0[p05_tmp_0];
+      c_a_3 = c_a_0[p05_tmp_0 + 8];
+      c_a_4 = c_a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * s + b_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1]
+          * b_tmp) + b_b[c_a_tmp_1 + 2] * c_a_3) + b_b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_1[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_1[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_1[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_1[p05_tmp_0 + 12];
+      cy = c_a_1[p05_tmp_0 + 4];
+      b_tmp = c_a_1[p05_tmp_0];
+      c_a_3 = c_a_1[p05_tmp_0 + 8];
+      c_a_4 = c_a_1[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * s + c_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + c_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          c_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1]
+          * b_tmp) + c_b[c_a_tmp_1 + 2] * c_a_3) + c_b[c_a_tmp_1 + 3] * c_a_4;
       }
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
       phi = a[p05_tmp_0 + 4];
       psi = a[p05_tmp_0];
-      rtb_TransferFcn9 = a[p05_tmp_0 + 8];
-      rtb_TransferFcn10 = a[p05_tmp_0 + 12];
+      cy = a[p05_tmp_0 + 8];
+      b_tmp = a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
         c_a_tmp[p05_tmp_0 + c_a_tmp_1] = ((c_a_2[c_a_tmp_1 + 1] * phi +
-          c_a_2[c_a_tmp_1] * psi) + c_a_2[c_a_tmp_1 + 2] * rtb_TransferFcn9) +
-          c_a_2[c_a_tmp_1 + 3] * rtb_TransferFcn10;
+          c_a_2[c_a_tmp_1] * psi) + c_a_2[c_a_tmp_1 + 2] * cy) + c_a_2[c_a_tmp_1
+          + 3] * b_tmp;
       }
     }
 
@@ -878,15 +901,15 @@ void URController::step()
     rtb_theta[6 * (i + 1) + 5] = psi;
   }
 
-  b_tmp[0] = 0;
-  b_tmp[1] = 0;
-  b_tmp[2] = 1;
+  b_tmp_0[0] = 0;
+  b_tmp_0[1] = 0;
+  b_tmp_0[2] = 1;
   for (b_i = 0; b_i < 4; b_i++) {
     i = b_i << 1;
     rtb_theta_tmp = i * 6;
     psi = rtb_theta[rtb_theta_tmp];
-    rtb_TransferFcn10 = std::sin(psi);
-    phi = std::cos(psi);
+    b_tmp = std::sin(psi);
+    cy = std::cos(psi);
     for (p05_tmp_0 = 0; p05_tmp_0 < 16; p05_tmp_0++) {
       c_a_tmp_1 = d_0[p05_tmp_0];
       c_a_tmp[p05_tmp_0] = c_a_tmp_1;
@@ -898,11 +921,11 @@ void URController::step()
 
     c_a[14] = 0.0892;
     b_b[12] = 0.0;
-    b[0] = phi;
-    b[4] = -rtb_TransferFcn10;
+    b[0] = cy;
+    b[4] = -b_tmp;
     b[8] = 0.0;
-    b[1] = rtb_TransferFcn10;
-    b[5] = phi;
+    b[1] = b_tmp;
+    b[5] = cy;
     b[9] = 0.0;
     b[2] = 0.0;
     b[6] = 0.0;
@@ -915,55 +938,52 @@ void URController::step()
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * s + b[c_a_tmp_1] *
-          rtb_TransferFcn9) + b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
+          b_tmp) + b[c_a_tmp_1 + 2] * c_a_3) + b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_1[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_1[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_1[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_1[p05_tmp_0 + 12];
+      cy = c_a_1[p05_tmp_0 + 4];
+      b_tmp = c_a_1[p05_tmp_0];
+      c_a_3 = c_a_1[p05_tmp_0 + 8];
+      c_a_4 = c_a_1[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * s + b_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1]
+          * b_tmp) + b_b[c_a_tmp_1 + 2] * c_a_3) + b_b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_0[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_0[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_0[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_0[p05_tmp_0 + 12];
+      cy = c_a_0[p05_tmp_0 + 4];
+      b_tmp = c_a_0[p05_tmp_0];
+      c_a_3 = c_a_0[p05_tmp_0 + 8];
+      c_a_4 = c_a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * s + c_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + c_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          c_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1]
+          * b_tmp) + c_b[c_a_tmp_1 + 2] * c_a_3) + c_b[c_a_tmp_1 + 3] * c_a_4;
       }
     }
 
     inv(c_a_2, c_a);
     psi = rtb_theta[rtb_theta_tmp + 5];
-    rtb_TransferFcn10 = std::sin(psi);
-    phi = std::cos(psi);
+    b_tmp = std::sin(psi);
+    cy = std::cos(psi);
     std::memcpy(&a[0], &c_a_tmp[0], sizeof(real_T) << 4U);
     std::memcpy(&b_b[0], &c_a_tmp[0], sizeof(real_T) << 4U);
     std::memcpy(&b[0], &c_a_tmp[0], sizeof(real_T) << 4U);
     std::memcpy(&c_b[0], &c_a_tmp[0], sizeof(real_T) << 4U);
     a[14] = 0.0825;
     b_b[12] = 0.0;
-    b[0] = phi;
-    b[4] = -rtb_TransferFcn10;
+    b[0] = cy;
+    b[4] = -b_tmp;
     b[8] = 0.0;
-    b[1] = rtb_TransferFcn10;
-    b[5] = phi;
+    b[1] = b_tmp;
+    b[5] = cy;
     b[9] = 0.0;
     b[2] = 0.0;
     b[6] = 0.0;
@@ -976,36 +996,35 @@ void URController::step()
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      cy = a[p05_tmp_0 + 4];
-      phi = a[p05_tmp_0];
-      rtb_TransferFcn12 = a[p05_tmp_0 + 8];
-      a_1 = a[p05_tmp_0 + 12];
+      phi = a[p05_tmp_0 + 4];
+      a_1 = a[p05_tmp_0];
+      a_2 = a[p05_tmp_0 + 8];
+      a_3 = a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
-          phi) + b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + b[c_a_tmp_1 + 3] * a_1;
+        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * phi + b[c_a_tmp_1] *
+          a_1) + b[c_a_tmp_1 + 2] * a_2) + b[c_a_tmp_1 + 3] * a_3;
       }
 
-      cy = c_a_2[p05_tmp_0 + 4];
-      phi = c_a_2[p05_tmp_0];
-      rtb_TransferFcn12 = c_a_2[p05_tmp_0 + 8];
-      a_1 = c_a_2[p05_tmp_0 + 12];
+      phi = c_a_2[p05_tmp_0 + 4];
+      a_1 = c_a_2[p05_tmp_0];
+      a_2 = c_a_2[p05_tmp_0 + 8];
+      a_3 = c_a_2[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1] *
-          phi) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + b_b[c_a_tmp_1 + 3] *
-          a_1;
+        a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * phi + b_b[c_a_tmp_1]
+          * a_1) + b_b[c_a_tmp_1 + 2] * a_2) + b_b[c_a_tmp_1 + 3] * a_3;
       }
 
-      cy = a_0[p05_tmp_0 + 4];
-      phi = a_0[p05_tmp_0];
-      rtb_TransferFcn12 = a_0[p05_tmp_0 + 8];
-      a_1 = a_0[p05_tmp_0 + 12];
+      phi = a_0[p05_tmp_0 + 4];
+      a_1 = a_0[p05_tmp_0];
+      a_2 = a_0[p05_tmp_0 + 8];
+      a_3 = a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1]
-          * phi) + c_b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + c_b[c_a_tmp_1 + 3] *
-          a_1;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * phi +
+          c_b[c_a_tmp_1] * a_1) + c_b[c_a_tmp_1 + 2] * a_2) + c_b[c_a_tmp_1 + 3]
+          * a_3;
       }
     }
 
@@ -1016,95 +1035,91 @@ void URController::step()
     a[14] = 0.09475;
     b[12] = 0.0;
     psi = rtb_theta[rtb_theta_tmp + 4];
-    phi = std::sin(psi);
-    rtb_TransferFcn9 = std::cos(psi);
-    c_b[0] = rtb_TransferFcn9;
-    c_b[4] = -phi;
+    cy = std::sin(psi);
+    phi = std::cos(psi);
+    c_b[0] = phi;
+    c_b[4] = -cy;
     c_b[8] = 0.0;
-    c_b[1] = phi;
-    c_b[5] = rtb_TransferFcn9;
+    c_b[1] = cy;
+    c_b[5] = phi;
     c_b[9] = 0.0;
     for (p05_tmp_0 = 0; p05_tmp_0 < 3; p05_tmp_0++) {
       xpageoffset = p05_tmp_0 << 2;
-      c_b[xpageoffset + 2] = b_tmp[p05_tmp_0];
+      c_b[xpageoffset + 2] = b_tmp_0[p05_tmp_0];
       c_a_tmp[xpageoffset] = h[3 * p05_tmp_0];
       c_a_tmp[xpageoffset + 1] = h[3 * p05_tmp_0 + 1];
       c_a_tmp[xpageoffset + 2] = h[3 * p05_tmp_0 + 2];
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      cy = a[p05_tmp_0 + 4];
-      phi = a[p05_tmp_0];
-      rtb_TransferFcn12 = a[p05_tmp_0 + 8];
-      a_1 = a[p05_tmp_0 + 12];
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      phi = a[p05_tmp_0 + 4];
+      a_1 = a[p05_tmp_0];
+      a_2 = a[p05_tmp_0 + 8];
+      a_3 = a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
         a_tmp = p05_tmp_0 + c_a_tmp_1;
-        c_a_2[a_tmp] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1] * phi) +
-                        c_b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + c_b[c_a_tmp_1
-          + 3] * a_1;
-        c_a_1[a_tmp] = ((rtb_gd[c_a_tmp_1 + 1] * s + rtb_gd[c_a_tmp_1] *
-                         rtb_TransferFcn9) + rtb_gd[c_a_tmp_1 + 2] *
-                        rtb_TransferFcn10) + rtb_gd[c_a_tmp_1 + 3] *
-          rtb_TransferFcn11;
+        c_a_2[a_tmp] = ((c_b[c_a_tmp_1 + 1] * phi + c_b[c_a_tmp_1] * a_1) +
+                        c_b[c_a_tmp_1 + 2] * a_2) + c_b[c_a_tmp_1 + 3] * a_3;
+        c_a_1[a_tmp] = ((rtb_gd[c_a_tmp_1 + 1] * cy + rtb_gd[c_a_tmp_1] * b_tmp)
+                        + rtb_gd[c_a_tmp_1 + 2] * c_a_3) + rtb_gd[c_a_tmp_1 + 3]
+          * c_a_4;
       }
 
-      cy = c_a_2[p05_tmp_0 + 4];
-      phi = c_a_2[p05_tmp_0];
-      rtb_TransferFcn12 = c_a_2[p05_tmp_0 + 8];
-      a_1 = c_a_2[p05_tmp_0 + 12];
+      phi = c_a_2[p05_tmp_0 + 4];
+      a_1 = c_a_2[p05_tmp_0];
+      a_2 = c_a_2[p05_tmp_0 + 8];
+      a_3 = c_a_2[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        a_0[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
-          phi) + b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + b[c_a_tmp_1 + 3] * a_1;
+        a_0[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * phi + b[c_a_tmp_1] *
+          a_1) + b[c_a_tmp_1 + 2] * a_2) + b[c_a_tmp_1 + 3] * a_3;
       }
 
-      cy = a_0[p05_tmp_0 + 4];
-      phi = a_0[p05_tmp_0];
-      rtb_TransferFcn12 = a_0[p05_tmp_0 + 8];
-      a_1 = a_0[p05_tmp_0 + 12];
+      phi = a_0[p05_tmp_0 + 4];
+      a_1 = a_0[p05_tmp_0];
+      a_2 = a_0[p05_tmp_0 + 8];
+      a_3 = a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_a_tmp[c_a_tmp_1 + 1] * cy +
-          c_a_tmp[c_a_tmp_1] * phi) + c_a_tmp[c_a_tmp_1 + 2] * rtb_TransferFcn12)
-          + c_a_tmp[c_a_tmp_1 + 3] * a_1;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_a_tmp[c_a_tmp_1 + 1] * phi +
+          c_a_tmp[c_a_tmp_1] * a_1) + c_a_tmp[c_a_tmp_1 + 2] * a_2) +
+          c_a_tmp[c_a_tmp_1 + 3] * a_3;
       }
     }
 
     inv(c_a_0, a);
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      s = c_a_1[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_1[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_1[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_1[p05_tmp_0 + 12];
+      cy = c_a_1[p05_tmp_0 + 4];
+      b_tmp = c_a_1[p05_tmp_0];
+      c_a_3 = c_a_1[p05_tmp_0 + 8];
+      c_a_4 = c_a_1[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * s + b_b[c_a_tmp_1] *
-          rtb_TransferFcn9) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1] *
+          b_tmp) + b_b[c_a_tmp_1 + 2] * c_a_3) + b_b[c_a_tmp_1 + 3] * c_a_4;
       }
 
       phi = 0.0;
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        phi += (((a[c_a_tmp_1 + 1] * s + a[c_a_tmp_1] * rtb_TransferFcn9) +
-                 a[c_a_tmp_1 + 2] * rtb_TransferFcn10) + a[c_a_tmp_1 + 3] *
-                rtb_TransferFcn11) * k[xpageoffset];
+        phi += (((a[c_a_tmp_1 + 1] * cy + a[c_a_tmp_1] * b_tmp) + a[c_a_tmp_1 +
+                 2] * c_a_3) + a[c_a_tmp_1 + 3] * c_a_4) * k[xpageoffset];
       }
 
       p05[p05_tmp_0] = phi - static_cast<real_T>(p05_tmp[p05_tmp_0]);
     }
 
-    s = norm(p05);
-    psi = std::acos(((s * s - 0.18062499999999998) - 0.15366400000000002) /
+    psi = norm(p05);
+    psi = std::acos(((psi * psi - 0.18062499999999998) - 0.15366400000000002) /
                     0.3332);
     rtb_theta[rtb_theta_tmp + 2] = psi;
     rtb_theta[6 * (i + 1) + 2] = -psi;
@@ -1116,8 +1131,8 @@ void URController::step()
 
   for (rtb_theta_tmp = 0; rtb_theta_tmp < 8; rtb_theta_tmp++) {
     psi = rtb_theta[6 * rtb_theta_tmp];
-    rtb_TransferFcn10 = std::sin(psi);
-    phi = std::cos(psi);
+    b_tmp = std::sin(psi);
+    cy = std::cos(psi);
     for (p05_tmp_0 = 0; p05_tmp_0 < 16; p05_tmp_0++) {
       c_a_tmp_1 = d_0[p05_tmp_0];
       c_a_tmp_0[p05_tmp_0] = static_cast<int8_T>(c_a_tmp_1);
@@ -1129,11 +1144,11 @@ void URController::step()
 
     c_a[14] = 0.0892;
     b_b[12] = 0.0;
-    b[0] = phi;
-    b[4] = -rtb_TransferFcn10;
+    b[0] = cy;
+    b[4] = -b_tmp;
     b[8] = 0.0;
-    b[1] = rtb_TransferFcn10;
-    b[5] = phi;
+    b[1] = b_tmp;
+    b[5] = cy;
     b[9] = 0.0;
     b[2] = 0.0;
     b[6] = 0.0;
@@ -1146,44 +1161,41 @@ void URController::step()
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * s + b[c_a_tmp_1] *
-          rtb_TransferFcn9) + b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
+          b_tmp) + b[c_a_tmp_1 + 2] * c_a_3) + b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_1[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_1[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_1[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_1[p05_tmp_0 + 12];
+      cy = c_a_1[p05_tmp_0 + 4];
+      b_tmp = c_a_1[p05_tmp_0];
+      c_a_3 = c_a_1[p05_tmp_0 + 8];
+      c_a_4 = c_a_1[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * s + b_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1]
+          * b_tmp) + b_b[c_a_tmp_1 + 2] * c_a_3) + b_b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_0[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_0[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_0[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_0[p05_tmp_0 + 12];
+      cy = c_a_0[p05_tmp_0 + 4];
+      b_tmp = c_a_0[p05_tmp_0];
+      c_a_3 = c_a_0[p05_tmp_0 + 8];
+      c_a_4 = c_a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * s + c_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + c_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          c_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1]
+          * b_tmp) + c_b[c_a_tmp_1 + 2] * c_a_3) + c_b[c_a_tmp_1 + 3] * c_a_4;
       }
     }
 
     inv(c_a_2, c_a);
-    rtb_TransferFcn11 = rtb_theta[6 * rtb_theta_tmp + 5];
-    rtb_TransferFcn10 = std::sin(rtb_TransferFcn11);
-    phi = std::cos(rtb_TransferFcn11);
+    c_a_3 = rtb_theta[6 * rtb_theta_tmp + 5];
+    b_tmp = std::sin(c_a_3);
+    cy = std::cos(c_a_3);
     for (p05_tmp_0 = 0; p05_tmp_0 < 16; p05_tmp_0++) {
       csz_idx_2 = c_a_tmp_0[p05_tmp_0];
       a[p05_tmp_0] = csz_idx_2;
@@ -1194,11 +1206,11 @@ void URController::step()
 
     a[14] = 0.0825;
     b_b[12] = 0.0;
-    b[0] = phi;
-    b[4] = -rtb_TransferFcn10;
+    b[0] = cy;
+    b[4] = -b_tmp;
     b[8] = 0.0;
-    b[1] = rtb_TransferFcn10;
-    b[5] = phi;
+    b[1] = b_tmp;
+    b[5] = cy;
     b[9] = 0.0;
     b[2] = 0.0;
     b[6] = 0.0;
@@ -1211,43 +1223,42 @@ void URController::step()
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      cy = a[p05_tmp_0 + 4];
-      phi = a[p05_tmp_0];
-      rtb_TransferFcn12 = a[p05_tmp_0 + 8];
-      a_1 = a[p05_tmp_0 + 12];
+      phi = a[p05_tmp_0 + 4];
+      a_1 = a[p05_tmp_0];
+      a_2 = a[p05_tmp_0 + 8];
+      a_3 = a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
-          phi) + b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + b[c_a_tmp_1 + 3] * a_1;
+        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * phi + b[c_a_tmp_1] *
+          a_1) + b[c_a_tmp_1 + 2] * a_2) + b[c_a_tmp_1 + 3] * a_3;
       }
 
-      cy = c_a_2[p05_tmp_0 + 4];
-      phi = c_a_2[p05_tmp_0];
-      rtb_TransferFcn12 = c_a_2[p05_tmp_0 + 8];
-      a_1 = c_a_2[p05_tmp_0 + 12];
+      phi = c_a_2[p05_tmp_0 + 4];
+      a_1 = c_a_2[p05_tmp_0];
+      a_2 = c_a_2[p05_tmp_0 + 8];
+      a_3 = c_a_2[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1] *
-          phi) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + b_b[c_a_tmp_1 + 3] *
-          a_1;
+        a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * phi + b_b[c_a_tmp_1]
+          * a_1) + b_b[c_a_tmp_1 + 2] * a_2) + b_b[c_a_tmp_1 + 3] * a_3;
       }
 
-      cy = a_0[p05_tmp_0 + 4];
-      phi = a_0[p05_tmp_0];
-      rtb_TransferFcn12 = a_0[p05_tmp_0 + 8];
-      a_1 = a_0[p05_tmp_0 + 12];
+      phi = a_0[p05_tmp_0 + 4];
+      a_1 = a_0[p05_tmp_0];
+      a_2 = a_0[p05_tmp_0 + 8];
+      a_3 = a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1]
-          * phi) + c_b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + c_b[c_a_tmp_1 + 3] *
-          a_1;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * phi +
+          c_b[c_a_tmp_1] * a_1) + c_b[c_a_tmp_1 + 2] * a_2) + c_b[c_a_tmp_1 + 3]
+          * a_3;
       }
     }
 
     inv(c_a_0, b_b);
-    rtb_TransferFcn11 = rtb_theta[6 * rtb_theta_tmp + 4];
-    phi = std::sin(rtb_TransferFcn11);
-    rtb_TransferFcn9 = std::cos(rtb_TransferFcn11);
+    c_a_3 = rtb_theta[6 * rtb_theta_tmp + 4];
+    cy = std::sin(c_a_3);
+    phi = std::cos(c_a_3);
     for (p05_tmp_0 = 0; p05_tmp_0 < 16; p05_tmp_0++) {
       csz_idx_2 = c_a_tmp_0[p05_tmp_0];
       a[p05_tmp_0] = csz_idx_2;
@@ -1258,11 +1269,11 @@ void URController::step()
 
     a[14] = 0.09475;
     b[12] = 0.0;
-    c_b[0] = rtb_TransferFcn9;
-    c_b[4] = -phi;
+    c_b[0] = phi;
+    c_b[4] = -cy;
     c_b[8] = 0.0;
-    c_b[1] = phi;
-    c_b[5] = rtb_TransferFcn9;
+    c_b[1] = cy;
+    c_b[5] = phi;
     c_b[9] = 0.0;
     c_b[2] = 0.0;
     c_b[6] = 0.0;
@@ -1275,83 +1286,79 @@ void URController::step()
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      cy = a[p05_tmp_0 + 4];
-      phi = a[p05_tmp_0];
-      rtb_TransferFcn12 = a[p05_tmp_0 + 8];
-      a_1 = a[p05_tmp_0 + 12];
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      phi = a[p05_tmp_0 + 4];
+      a_1 = a[p05_tmp_0];
+      a_2 = a[p05_tmp_0 + 8];
+      a_3 = a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
         a_tmp = p05_tmp_0 + c_a_tmp_1;
-        c_a_2[a_tmp] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1] * phi) +
-                        c_b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + c_b[c_a_tmp_1
-          + 3] * a_1;
-        c_a_1[a_tmp] = ((rtb_gd[c_a_tmp_1 + 1] * s + rtb_gd[c_a_tmp_1] *
-                         rtb_TransferFcn9) + rtb_gd[c_a_tmp_1 + 2] *
-                        rtb_TransferFcn10) + rtb_gd[c_a_tmp_1 + 3] *
-          rtb_TransferFcn11;
+        c_a_2[a_tmp] = ((c_b[c_a_tmp_1 + 1] * phi + c_b[c_a_tmp_1] * a_1) +
+                        c_b[c_a_tmp_1 + 2] * a_2) + c_b[c_a_tmp_1 + 3] * a_3;
+        c_a_1[a_tmp] = ((rtb_gd[c_a_tmp_1 + 1] * cy + rtb_gd[c_a_tmp_1] * b_tmp)
+                        + rtb_gd[c_a_tmp_1 + 2] * c_a_3) + rtb_gd[c_a_tmp_1 + 3]
+          * c_a_4;
       }
 
-      cy = c_a_2[p05_tmp_0 + 4];
-      phi = c_a_2[p05_tmp_0];
-      rtb_TransferFcn12 = c_a_2[p05_tmp_0 + 8];
-      a_1 = c_a_2[p05_tmp_0 + 12];
+      phi = c_a_2[p05_tmp_0 + 4];
+      a_1 = c_a_2[p05_tmp_0];
+      a_2 = c_a_2[p05_tmp_0 + 8];
+      a_3 = c_a_2[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        a_0[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
-          phi) + b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + b[c_a_tmp_1 + 3] * a_1;
+        a_0[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * phi + b[c_a_tmp_1] *
+          a_1) + b[c_a_tmp_1 + 2] * a_2) + b[c_a_tmp_1 + 3] * a_3;
       }
 
-      cy = a_0[p05_tmp_0 + 4];
-      phi = a_0[p05_tmp_0];
-      rtb_TransferFcn12 = a_0[p05_tmp_0 + 8];
-      a_1 = a_0[p05_tmp_0 + 12];
+      phi = a_0[p05_tmp_0 + 4];
+      a_1 = a_0[p05_tmp_0];
+      a_2 = a_0[p05_tmp_0 + 8];
+      a_3 = a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_a_tmp[c_a_tmp_1 + 1] * cy +
-          c_a_tmp[c_a_tmp_1] * phi) + c_a_tmp[c_a_tmp_1 + 2] * rtb_TransferFcn12)
-          + c_a_tmp[c_a_tmp_1 + 3] * a_1;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_a_tmp[c_a_tmp_1 + 1] * phi +
+          c_a_tmp[c_a_tmp_1] * a_1) + c_a_tmp[c_a_tmp_1 + 2] * a_2) +
+          c_a_tmp[c_a_tmp_1 + 3] * a_3;
       }
     }
 
     inv(c_a_0, a);
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      s = c_a_1[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_1[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_1[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_1[p05_tmp_0 + 12];
+      cy = c_a_1[p05_tmp_0 + 4];
+      b_tmp = c_a_1[p05_tmp_0];
+      c_a_3 = c_a_1[p05_tmp_0 + 8];
+      c_a_4 = c_a_1[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * s + b_b[c_a_tmp_1] *
-          rtb_TransferFcn9) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1] *
+          b_tmp) + b_b[c_a_tmp_1 + 2] * c_a_3) + b_b[c_a_tmp_1 + 3] * c_a_4;
       }
 
       phi = 0.0;
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         i = xpageoffset << 2;
-        rtb_TransferFcn12 = ((a[i + 1] * s + a[i] * rtb_TransferFcn9) + a[i + 2]
-                             * rtb_TransferFcn10) + a[i + 3] * rtb_TransferFcn11;
-        T14[p05_tmp_0 + i] = rtb_TransferFcn12;
-        phi += rtb_TransferFcn12 * k[xpageoffset];
+        a_1 = ((a[i + 1] * cy + a[i] * b_tmp) + a[i + 2] * c_a_3) + a[i + 3] *
+          c_a_4;
+        T14[p05_tmp_0 + i] = a_1;
+        phi += a_1 * k[xpageoffset];
       }
 
       p05[p05_tmp_0] = phi - static_cast<real_T>(p05_tmp[p05_tmp_0]);
     }
 
-    rtb_TransferFcn11 = rtb_theta[6 * rtb_theta_tmp + 2];
-    rtb_TransferFcn9 = std::sin(rtb_TransferFcn11);
-    phi = std::asin(-0.392 * rtb_TransferFcn9 / norm(p05)) - std::atan2(p05[1],
-      -p05[0]);
+    c_a_3 = rtb_theta[6 * rtb_theta_tmp + 2];
+    cy = std::sin(c_a_3);
+    phi = std::asin(-0.392 * cy / norm(p05)) - std::atan2(p05[1], -p05[0]);
     rtb_theta[6 * rtb_theta_tmp + 1] = phi;
-    rtb_TransferFcn10 = std::cos(rtb_TransferFcn11);
+    b_tmp = std::cos(c_a_3);
     for (p05_tmp_0 = 0; p05_tmp_0 < 16; p05_tmp_0++) {
       csz_idx_2 = c_a_tmp_0[p05_tmp_0];
       c_a[p05_tmp_0] = csz_idx_2;
@@ -1362,11 +1369,11 @@ void URController::step()
 
     c_a[14] = 0.0;
     b_b[12] = -0.392;
-    b[0] = rtb_TransferFcn10;
-    b[4] = -rtb_TransferFcn9;
+    b[0] = b_tmp;
+    b[4] = -cy;
     b[8] = 0.0;
-    b[1] = rtb_TransferFcn9;
-    b[5] = rtb_TransferFcn10;
+    b[1] = cy;
+    b[5] = b_tmp;
     b[9] = 0.0;
     b[2] = 0.0;
     b[6] = 0.0;
@@ -1379,43 +1386,40 @@ void URController::step()
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * s + b[c_a_tmp_1] *
-          rtb_TransferFcn9) + b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
+          b_tmp) + b[c_a_tmp_1 + 2] * c_a_3) + b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_1[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_1[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_1[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_1[p05_tmp_0 + 12];
+      cy = c_a_1[p05_tmp_0 + 4];
+      b_tmp = c_a_1[p05_tmp_0];
+      c_a_3 = c_a_1[p05_tmp_0 + 8];
+      c_a_4 = c_a_1[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * s + b_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          b_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1]
+          * b_tmp) + b_b[c_a_tmp_1 + 2] * c_a_3) + b_b[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_0[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_0[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_0[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_0[p05_tmp_0 + 12];
+      cy = c_a_0[p05_tmp_0 + 4];
+      b_tmp = c_a_0[p05_tmp_0];
+      c_a_3 = c_a_0[p05_tmp_0 + 8];
+      c_a_4 = c_a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * s + c_b[c_a_tmp_1]
-          * rtb_TransferFcn9) + c_b[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          c_b[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1]
+          * b_tmp) + c_b[c_a_tmp_1 + 2] * c_a_3) + c_b[c_a_tmp_1 + 3] * c_a_4;
       }
     }
 
     inv(c_a_2, c_a);
-    rtb_TransferFcn10 = std::sin(phi);
-    phi = std::cos(phi);
+    b_tmp = std::sin(phi);
+    cy = std::cos(phi);
     for (p05_tmp_0 = 0; p05_tmp_0 < 16; p05_tmp_0++) {
       csz_idx_2 = c_a_tmp_0[p05_tmp_0];
       a[p05_tmp_0] = csz_idx_2;
@@ -1426,11 +1430,11 @@ void URController::step()
 
     a[14] = 0.0;
     b_b[12] = -0.425;
-    b[0] = phi;
-    b[4] = -rtb_TransferFcn10;
+    b[0] = cy;
+    b[4] = -b_tmp;
     b[8] = 0.0;
-    b[1] = rtb_TransferFcn10;
-    b[5] = phi;
+    b[1] = b_tmp;
+    b[5] = cy;
     b[9] = 0.0;
     b[2] = 0.0;
     b[6] = 0.0;
@@ -1443,61 +1447,59 @@ void URController::step()
     }
 
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      cy = a[p05_tmp_0 + 4];
-      phi = a[p05_tmp_0];
-      rtb_TransferFcn12 = a[p05_tmp_0 + 8];
-      a_1 = a[p05_tmp_0 + 12];
+      phi = a[p05_tmp_0 + 4];
+      a_1 = a[p05_tmp_0];
+      a_2 = a[p05_tmp_0 + 8];
+      a_3 = a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * cy + b[c_a_tmp_1] *
-          phi) + b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + b[c_a_tmp_1 + 3] * a_1;
+        c_a_2[p05_tmp_0 + c_a_tmp_1] = ((b[c_a_tmp_1 + 1] * phi + b[c_a_tmp_1] *
+          a_1) + b[c_a_tmp_1 + 2] * a_2) + b[c_a_tmp_1 + 3] * a_3;
       }
 
-      cy = c_a_2[p05_tmp_0 + 4];
-      phi = c_a_2[p05_tmp_0];
-      rtb_TransferFcn12 = c_a_2[p05_tmp_0 + 8];
-      a_1 = c_a_2[p05_tmp_0 + 12];
+      phi = c_a_2[p05_tmp_0 + 4];
+      a_1 = c_a_2[p05_tmp_0];
+      a_2 = c_a_2[p05_tmp_0 + 8];
+      a_3 = c_a_2[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * cy + b_b[c_a_tmp_1] *
-          phi) + b_b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + b_b[c_a_tmp_1 + 3] *
-          a_1;
+        a_0[p05_tmp_0 + c_a_tmp_1] = ((b_b[c_a_tmp_1 + 1] * phi + b_b[c_a_tmp_1]
+          * a_1) + b_b[c_a_tmp_1 + 2] * a_2) + b_b[c_a_tmp_1 + 3] * a_3;
       }
 
-      cy = a_0[p05_tmp_0 + 4];
-      phi = a_0[p05_tmp_0];
-      rtb_TransferFcn12 = a_0[p05_tmp_0 + 8];
-      a_1 = a_0[p05_tmp_0 + 12];
+      phi = a_0[p05_tmp_0 + 4];
+      a_1 = a_0[p05_tmp_0];
+      a_2 = a_0[p05_tmp_0 + 8];
+      a_3 = a_0[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * cy + c_b[c_a_tmp_1]
-          * phi) + c_b[c_a_tmp_1 + 2] * rtb_TransferFcn12) + c_b[c_a_tmp_1 + 3] *
-          a_1;
+        c_a_0[p05_tmp_0 + c_a_tmp_1] = ((c_b[c_a_tmp_1 + 1] * phi +
+          c_b[c_a_tmp_1] * a_1) + c_b[c_a_tmp_1 + 2] * a_2) + c_b[c_a_tmp_1 + 3]
+          * a_3;
       }
     }
 
     inv(c_a_0, a);
     for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-      s = c_a[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a[p05_tmp_0];
-      rtb_TransferFcn10 = c_a[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a[p05_tmp_0 + 12];
+      cy = c_a[p05_tmp_0 + 4];
+      b_tmp = c_a[p05_tmp_0];
+      c_a_3 = c_a[p05_tmp_0 + 8];
+      c_a_4 = c_a[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((a[c_a_tmp_1 + 1] * s + a[c_a_tmp_1] *
-          rtb_TransferFcn9) + a[c_a_tmp_1 + 2] * rtb_TransferFcn10) +
-          a[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_1[p05_tmp_0 + c_a_tmp_1] = ((a[c_a_tmp_1 + 1] * cy + a[c_a_tmp_1] *
+          b_tmp) + a[c_a_tmp_1 + 2] * c_a_3) + a[c_a_tmp_1 + 3] * c_a_4;
       }
 
-      s = c_a_1[p05_tmp_0 + 4];
-      rtb_TransferFcn9 = c_a_1[p05_tmp_0];
-      rtb_TransferFcn10 = c_a_1[p05_tmp_0 + 8];
-      rtb_TransferFcn11 = c_a_1[p05_tmp_0 + 12];
+      cy = c_a_1[p05_tmp_0 + 4];
+      b_tmp = c_a_1[p05_tmp_0];
+      c_a_3 = c_a_1[p05_tmp_0 + 8];
+      c_a_4 = c_a_1[p05_tmp_0 + 12];
       for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
         c_a_tmp_1 = xpageoffset << 2;
-        c_a_tmp[p05_tmp_0 + c_a_tmp_1] = ((T14[c_a_tmp_1 + 1] * s +
-          T14[c_a_tmp_1] * rtb_TransferFcn9) + T14[c_a_tmp_1 + 2] *
-          rtb_TransferFcn10) + T14[c_a_tmp_1 + 3] * rtb_TransferFcn11;
+        c_a_tmp[p05_tmp_0 + c_a_tmp_1] = ((T14[c_a_tmp_1 + 1] * cy +
+          T14[c_a_tmp_1] * b_tmp) + T14[c_a_tmp_1 + 2] * c_a_3) + T14[c_a_tmp_1
+          + 3] * c_a_4;
       }
     }
 
@@ -1519,51 +1521,34 @@ void URController::step()
 
   // End of MATLAB Function: '<S5>/MATLAB Function'
 
-  // TransferFcn: '<S4>/Transfer Fcn7'
-  psi = (6.0 * rtX.TransferFcn7_CSTATE[1] + rtX.TransferFcn7_CSTATE[0]) + 10.0 *
-    rtX.TransferFcn7_CSTATE[2];
-
-  // TransferFcn: '<S4>/Transfer Fcn8'
-  phi = (6.0 * rtX.TransferFcn8_CSTATE[1] + rtX.TransferFcn8_CSTATE[0]) + 10.0 *
-    rtX.TransferFcn8_CSTATE[2];
-
-  // TransferFcn: '<S4>/Transfer Fcn9'
-  rtb_TransferFcn9 = (6.0 * rtX.TransferFcn9_CSTATE[1] +
-                      rtX.TransferFcn9_CSTATE[0]) + 10.0 *
-    rtX.TransferFcn9_CSTATE[2];
-
-  // TransferFcn: '<S4>/Transfer Fcn10'
-  rtb_TransferFcn10 = (6.0 * rtX.TransferFcn10_CSTATE[1] +
-                       rtX.TransferFcn10_CSTATE[0]) + 10.0 *
-    rtX.TransferFcn10_CSTATE[2];
-
-  // TransferFcn: '<S4>/Transfer Fcn11'
-  rtb_TransferFcn11 = (6.0 * rtX.TransferFcn11_CSTATE[1] +
-                       rtX.TransferFcn11_CSTATE[0]) + 10.0 *
-    rtX.TransferFcn11_CSTATE[2];
-
-  // TransferFcn: '<S4>/Transfer Fcn12'
-  rtb_TransferFcn12 = (6.0 * rtX.TransferFcn12_CSTATE[1] +
-                       rtX.TransferFcn12_CSTATE[0]) + 10.0 *
-    rtX.TransferFcn12_CSTATE[2];
-
-  // SignalConversion generated from: '<S322>/ SFunction ' incorporates:
+  // SignalConversion generated from: '<S340>/ SFunction ' incorporates:
+  //   Integrator: '<S10>/Integrator'
+  //   Integrator: '<S11>/Integrator'
+  //   Integrator: '<S12>/Integrator'
+  //   Integrator: '<S7>/Integrator'
+  //   Integrator: '<S8>/Integrator'
+  //   Integrator: '<S9>/Integrator'
   //   MATLAB Function: '<S2>/isInitialized'
   //   MATLAB Function: '<S3>/MATLAB Function'
   //   SignalConversion generated from: '<S6>/ SFunction '
 
-  rtb_Switch[0] = psi;
-  rtb_Switch[1] = phi;
-  rtb_Switch[2] = rtb_TransferFcn9;
-  rtb_Switch[3] = rtb_TransferFcn10;
-  rtb_Switch[4] = rtb_TransferFcn11;
-  rtb_Switch[5] = rtb_TransferFcn12;
+  rtb_Switch[0] = rtX.Integrator_CSTATE;
+  rtb_Switch[1] = rtX.Integrator_CSTATE_g;
+  rtb_Switch[2] = rtX.Integrator_CSTATE_o;
+  rtb_Switch[3] = rtX.Integrator_CSTATE_c;
+  rtb_Switch[4] = rtX.Integrator_CSTATE_k;
+  rtb_Switch[5] = rtX.Integrator_CSTATE_gj;
 
   // MATLAB Function: '<S3>/MATLAB Function' incorporates:
-  //   SignalConversion generated from: '<S322>/ SFunction '
+  //   Integrator: '<S10>/Integrator'
+  //   Integrator: '<S11>/Integrator'
+  //   Integrator: '<S12>/Integrator'
+  //   Integrator: '<S7>/Integrator'
+  //   Integrator: '<S8>/Integrator'
+  //   Integrator: '<S9>/Integrator'
 
-  cy = std::sin(psi);
-  s = std::cos(psi);
+  phi = std::sin(rtX.Integrator_CSTATE);
+  psi = std::cos(rtX.Integrator_CSTATE);
   for (p05_tmp_0 = 0; p05_tmp_0 < 9; p05_tmp_0++) {
     b_I[p05_tmp_0] = 0;
   }
@@ -1578,19 +1563,19 @@ void URController::step()
   for (p05_tmp_0 = 0; p05_tmp_0 < 3; p05_tmp_0++) {
     for (xpageoffset = 0; xpageoffset < 3; xpageoffset++) {
       rtb_theta_tmp = 3 * xpageoffset + p05_tmp_0;
-      R[rtb_theta_tmp] = (((1.0 - s) * static_cast<real_T>(R_tmp[p05_tmp_0 + 3])
+      R[rtb_theta_tmp] = (((1.0 - psi) * static_cast<real_T>(R_tmp[p05_tmp_0 + 3])
                            * static_cast<real_T>(R_tmp[3 * xpageoffset + 1]) +
-                           (1.0 - s) * static_cast<real_T>(R_tmp[p05_tmp_0]) *
+                           (1.0 - psi) * static_cast<real_T>(R_tmp[p05_tmp_0]) *
                            static_cast<real_T>(R_tmp[3 * xpageoffset])) +
-                          static_cast<real_T>(R_tmp[p05_tmp_0 + 6]) * (1.0 - s) *
-                          static_cast<real_T>(R_tmp[3 * xpageoffset + 2])) + (
-        static_cast<real_T>(R_tmp[rtb_theta_tmp]) * cy + static_cast<real_T>
+                          static_cast<real_T>(R_tmp[p05_tmp_0 + 6]) * (1.0 - psi)
+                          * static_cast<real_T>(R_tmp[3 * xpageoffset + 2])) + (
+        static_cast<real_T>(R_tmp[rtb_theta_tmp]) * phi + static_cast<real_T>
         (b_I[rtb_theta_tmp]));
     }
   }
 
-  s = std::sin(phi);
-  cy = std::cos(phi);
+  psi = std::sin(rtX.Integrator_CSTATE_g);
+  cy = std::cos(rtX.Integrator_CSTATE_g);
   for (p05_tmp_0 = 0; p05_tmp_0 < 9; p05_tmp_0++) {
     b_I[p05_tmp_0] = 0;
   }
@@ -1610,7 +1595,7 @@ void URController::step()
         static_cast<real_T>(R_tmp[p05_tmp_0]) * static_cast<real_T>(R_tmp[3 *
         xpageoffset])) + static_cast<real_T>(R_tmp[p05_tmp_0 + 6]) * (1.0 - cy) *
                             static_cast<real_T>(R_tmp[3 * xpageoffset + 2])) + (
-        static_cast<real_T>(R_tmp[rtb_theta_tmp]) * s + static_cast<real_T>
+        static_cast<real_T>(R_tmp[rtb_theta_tmp]) * psi + static_cast<real_T>
         (b_I[rtb_theta_tmp]));
     }
   }
@@ -1630,8 +1615,8 @@ void URController::step()
     b_p_data[p05_tmp_0] = b_0[p05_tmp_0 + 6] * 0.0892;
   }
 
-  s = std::sin(rtb_TransferFcn9);
-  cy = std::cos(rtb_TransferFcn9);
+  cy = std::sin(rtX.Integrator_CSTATE_o);
+  psi = std::cos(rtX.Integrator_CSTATE_o);
   for (p05_tmp_0 = 0; p05_tmp_0 < 9; p05_tmp_0++) {
     b_I[p05_tmp_0] = 0;
   }
@@ -1642,13 +1627,13 @@ void URController::step()
   for (p05_tmp_0 = 0; p05_tmp_0 < 3; p05_tmp_0++) {
     for (xpageoffset = 0; xpageoffset < 3; xpageoffset++) {
       rtb_theta_tmp = 3 * xpageoffset + p05_tmp_0;
-      c_R[rtb_theta_tmp] = (((1.0 - cy) * static_cast<real_T>(R_tmp[p05_tmp_0 +
-        3]) * static_cast<real_T>(R_tmp[3 * xpageoffset + 1]) + (1.0 - cy) *
+      c_R[rtb_theta_tmp] = (((1.0 - psi) * static_cast<real_T>(R_tmp[p05_tmp_0 +
+        3]) * static_cast<real_T>(R_tmp[3 * xpageoffset + 1]) + (1.0 - psi) *
         static_cast<real_T>(R_tmp[p05_tmp_0]) * static_cast<real_T>(R_tmp[3 *
-        xpageoffset])) + static_cast<real_T>(R_tmp[p05_tmp_0 + 6]) * (1.0 - cy) *
-                            static_cast<real_T>(R_tmp[3 * xpageoffset + 2])) + (
-        static_cast<real_T>(R_tmp[rtb_theta_tmp]) * s + static_cast<real_T>
-        (b_I[rtb_theta_tmp]));
+        xpageoffset])) + static_cast<real_T>(R_tmp[p05_tmp_0 + 6]) * (1.0 - psi)
+                            * static_cast<real_T>(R_tmp[3 * xpageoffset + 2])) +
+        (static_cast<real_T>(R_tmp[rtb_theta_tmp]) * cy + static_cast<real_T>
+         (b_I[rtb_theta_tmp]));
     }
   }
 
@@ -1667,8 +1652,8 @@ void URController::step()
     c_p_data[p05_tmp_0] = b_0[p05_tmp_0 + 6] * 0.0892 + b_0[p05_tmp_0] * 0.425;
   }
 
-  s = std::sin(rtb_TransferFcn10);
-  cy = std::cos(rtb_TransferFcn10);
+  psi = std::sin(rtX.Integrator_CSTATE_c);
+  cy = std::cos(rtX.Integrator_CSTATE_c);
   for (p05_tmp_0 = 0; p05_tmp_0 < 9; p05_tmp_0++) {
     b_I[p05_tmp_0] = 0;
   }
@@ -1684,7 +1669,7 @@ void URController::step()
         static_cast<real_T>(R_tmp[p05_tmp_0]) * static_cast<real_T>(R_tmp[3 *
         xpageoffset])) + static_cast<real_T>(R_tmp[p05_tmp_0 + 6]) * (1.0 - cy) *
                             static_cast<real_T>(R_tmp[3 * xpageoffset + 2])) + (
-        static_cast<real_T>(R_tmp[rtb_theta_tmp]) * s + static_cast<real_T>
+        static_cast<real_T>(R_tmp[rtb_theta_tmp]) * psi + static_cast<real_T>
         (b_I[rtb_theta_tmp]));
     }
   }
@@ -1704,8 +1689,8 @@ void URController::step()
     d_p_data[p05_tmp_0] = b_0[p05_tmp_0 + 6] * 0.0892 + b_0[p05_tmp_0] * 0.817;
   }
 
-  s = std::sin(rtb_TransferFcn11);
-  cy = std::cos(rtb_TransferFcn11);
+  psi = std::sin(rtX.Integrator_CSTATE_k);
+  cy = std::cos(rtX.Integrator_CSTATE_k);
   for (p05_tmp_0 = 0; p05_tmp_0 < 9; p05_tmp_0++) {
     b_I[p05_tmp_0] = 0;
   }
@@ -1723,7 +1708,7 @@ void URController::step()
       e_R[rtb_theta_tmp] = (((1.0 - cy) * f_R[p05_tmp_0 + 3] * f_R[3 *
         xpageoffset + 1] + (1.0 - cy) * f_R[p05_tmp_0] * f_R[3 * xpageoffset]) +
                             f_R[p05_tmp_0 + 6] * (1.0 - cy) * f_R[3 *
-                            xpageoffset + 2]) + (f_R[rtb_theta_tmp] * s +
+                            xpageoffset + 2]) + (f_R[rtb_theta_tmp] * psi +
         static_cast<real_T>(b_I[rtb_theta_tmp]));
     }
   }
@@ -1743,8 +1728,8 @@ void URController::step()
     e_p_data[p05_tmp_0] = b_0[p05_tmp_0 + 3] * 0.1093 + b_0[p05_tmp_0] * 0.817;
   }
 
-  s = std::sin(rtb_TransferFcn12);
-  cy = std::cos(rtb_TransferFcn12);
+  psi = std::sin(rtX.Integrator_CSTATE_gj);
+  cy = std::cos(rtX.Integrator_CSTATE_gj);
   for (p05_tmp_0 = 0; p05_tmp_0 < 9; p05_tmp_0++) {
     b_I[p05_tmp_0] = 0;
   }
@@ -1760,7 +1745,7 @@ void URController::step()
         static_cast<real_T>(R_tmp[p05_tmp_0]) * static_cast<real_T>(R_tmp[3 *
         xpageoffset])) + static_cast<real_T>(R_tmp[p05_tmp_0 + 6]) * (1.0 - cy) *
                             static_cast<real_T>(R_tmp[3 * xpageoffset + 2])) + (
-        static_cast<real_T>(R_tmp[rtb_theta_tmp]) * s + static_cast<real_T>
+        static_cast<real_T>(R_tmp[rtb_theta_tmp]) * psi + static_cast<real_T>
         (b_I[rtb_theta_tmp]));
     }
   }
@@ -1830,15 +1815,15 @@ void URController::step()
   rtb_gd[10] = c_R[8];
   rtb_gd[14] = c_p_data[2];
   for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-    s = c_b[p05_tmp_0 + 4];
+    psi = c_b[p05_tmp_0 + 4];
     cy = c_b[p05_tmp_0];
-    a_1 = c_b[p05_tmp_0 + 8];
-    R_0 = c_b[p05_tmp_0 + 12];
+    phi = c_b[p05_tmp_0 + 8];
+    b_tmp = c_b[p05_tmp_0 + 12];
     for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
       rtb_theta_tmp = xpageoffset << 2;
-      c_a[p05_tmp_0 + rtb_theta_tmp] = ((b_b[rtb_theta_tmp + 1] * s +
-        b_b[rtb_theta_tmp] * cy) + b_b[rtb_theta_tmp + 2] * a_1) +
-        b_b[rtb_theta_tmp + 3] * R_0;
+      c_a[p05_tmp_0 + rtb_theta_tmp] = ((b_b[rtb_theta_tmp + 1] * psi +
+        b_b[rtb_theta_tmp] * cy) + b_b[rtb_theta_tmp + 2] * phi) +
+        b_b[rtb_theta_tmp + 3] * b_tmp;
     }
 
     rtb_gd[(p05_tmp_0 << 2) + 3] = p05_tmp[p05_tmp_0];
@@ -1857,15 +1842,15 @@ void URController::step()
   b_b[10] = d_R[8];
   b_b[14] = d_p_data[2];
   for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-    s = c_a[p05_tmp_0 + 4];
+    psi = c_a[p05_tmp_0 + 4];
     cy = c_a[p05_tmp_0];
-    a_1 = c_a[p05_tmp_0 + 8];
-    R_0 = c_a[p05_tmp_0 + 12];
+    phi = c_a[p05_tmp_0 + 8];
+    b_tmp = c_a[p05_tmp_0 + 12];
     for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
       rtb_theta_tmp = xpageoffset << 2;
-      c_b[p05_tmp_0 + rtb_theta_tmp] = ((rtb_gd[rtb_theta_tmp + 1] * s +
-        rtb_gd[rtb_theta_tmp] * cy) + rtb_gd[rtb_theta_tmp + 2] * a_1) +
-        rtb_gd[rtb_theta_tmp + 3] * R_0;
+      c_b[p05_tmp_0 + rtb_theta_tmp] = ((rtb_gd[rtb_theta_tmp + 1] * psi +
+        rtb_gd[rtb_theta_tmp] * cy) + rtb_gd[rtb_theta_tmp + 2] * phi) +
+        rtb_gd[rtb_theta_tmp + 3] * b_tmp;
     }
 
     b_b[(p05_tmp_0 << 2) + 3] = p05_tmp[p05_tmp_0];
@@ -1884,15 +1869,15 @@ void URController::step()
   rtb_gd[10] = e_R[8];
   rtb_gd[14] = e_p_data[2];
   for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-    s = c_b[p05_tmp_0 + 4];
+    psi = c_b[p05_tmp_0 + 4];
     cy = c_b[p05_tmp_0];
-    a_1 = c_b[p05_tmp_0 + 8];
-    R_0 = c_b[p05_tmp_0 + 12];
+    phi = c_b[p05_tmp_0 + 8];
+    b_tmp = c_b[p05_tmp_0 + 12];
     for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
       rtb_theta_tmp = xpageoffset << 2;
-      c_a[p05_tmp_0 + rtb_theta_tmp] = ((b_b[rtb_theta_tmp + 1] * s +
-        b_b[rtb_theta_tmp] * cy) + b_b[rtb_theta_tmp + 2] * a_1) +
-        b_b[rtb_theta_tmp + 3] * R_0;
+      c_a[p05_tmp_0 + rtb_theta_tmp] = ((b_b[rtb_theta_tmp + 1] * psi +
+        b_b[rtb_theta_tmp] * cy) + b_b[rtb_theta_tmp + 2] * phi) +
+        b_b[rtb_theta_tmp + 3] * b_tmp;
     }
 
     rtb_gd[(p05_tmp_0 << 2) + 3] = p05_tmp[p05_tmp_0];
@@ -1911,55 +1896,54 @@ void URController::step()
   b_b[10] = f_R[8];
   b_b[14] = f_p_data[2];
   for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-    s = c_a[p05_tmp_0 + 4];
+    psi = c_a[p05_tmp_0 + 4];
     cy = c_a[p05_tmp_0];
-    a_1 = c_a[p05_tmp_0 + 8];
-    R_0 = c_a[p05_tmp_0 + 12];
+    phi = c_a[p05_tmp_0 + 8];
+    b_tmp = c_a[p05_tmp_0 + 12];
     for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
       rtb_theta_tmp = xpageoffset << 2;
-      c_b[p05_tmp_0 + rtb_theta_tmp] = ((rtb_gd[rtb_theta_tmp + 1] * s +
-        rtb_gd[rtb_theta_tmp] * cy) + rtb_gd[rtb_theta_tmp + 2] * a_1) +
-        rtb_gd[rtb_theta_tmp + 3] * R_0;
+      c_b[p05_tmp_0 + rtb_theta_tmp] = ((rtb_gd[rtb_theta_tmp + 1] * psi +
+        rtb_gd[rtb_theta_tmp] * cy) + rtb_gd[rtb_theta_tmp + 2] * phi) +
+        rtb_gd[rtb_theta_tmp + 3] * b_tmp;
     }
 
     b_b[(p05_tmp_0 << 2) + 3] = p05_tmp[p05_tmp_0];
   }
 
   for (p05_tmp_0 = 0; p05_tmp_0 < 4; p05_tmp_0++) {
-    s = c_b[p05_tmp_0 + 4];
+    psi = c_b[p05_tmp_0 + 4];
     cy = c_b[p05_tmp_0];
-    a_1 = c_b[p05_tmp_0 + 8];
-    R_0 = c_b[p05_tmp_0 + 12];
+    phi = c_b[p05_tmp_0 + 8];
+    b_tmp = c_b[p05_tmp_0 + 12];
     for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
       rtb_theta_tmp = xpageoffset << 2;
-      c_a[p05_tmp_0 + rtb_theta_tmp] = ((b_b[rtb_theta_tmp + 1] * s +
-        b_b[rtb_theta_tmp] * cy) + b_b[rtb_theta_tmp + 2] * a_1) +
-        b_b[rtb_theta_tmp + 3] * R_0;
+      c_a[p05_tmp_0 + rtb_theta_tmp] = ((b_b[rtb_theta_tmp + 1] * psi +
+        b_b[rtb_theta_tmp] * cy) + b_b[rtb_theta_tmp + 2] * phi) +
+        b_b[rtb_theta_tmp + 3] * b_tmp;
     }
 
-    s = c_a[p05_tmp_0 + 4];
+    psi = c_a[p05_tmp_0 + 4];
     cy = c_a[p05_tmp_0];
-    a_1 = c_a[p05_tmp_0 + 8];
-    R_0 = c_a[p05_tmp_0 + 12];
+    phi = c_a[p05_tmp_0 + 8];
+    b_tmp = c_a[p05_tmp_0 + 12];
     for (xpageoffset = 0; xpageoffset < 4; xpageoffset++) {
       rtb_theta_tmp = xpageoffset << 2;
-      rtb_gd[p05_tmp_0 + rtb_theta_tmp] = ((g_b[rtb_theta_tmp + 1] * s +
-        g_b[rtb_theta_tmp] * cy) + g_b[rtb_theta_tmp + 2] * a_1) +
-        g_b[rtb_theta_tmp + 3] * R_0;
+      rtb_gd[p05_tmp_0 + rtb_theta_tmp] = ((g_b[rtb_theta_tmp + 1] * psi +
+        g_b[rtb_theta_tmp] * cy) + g_b[rtb_theta_tmp + 2] * phi) +
+        g_b[rtb_theta_tmp + 3] * b_tmp;
     }
   }
 
   // MATLAB Function: '<S2>/isInitialized' incorporates:
-  //   MATLAB Function: '<S3>/MATLAB Function'
-  //   SignalConversion generated from: '<S322>/ SFunction '
+  //   Integrator: '<S7>/Integrator'
   //   SignalConversion generated from: '<S6>/ SFunction '
 
-  s = psi;
+  psi = rtX.Integrator_CSTATE;
   for (p05_tmp_0 = 0; p05_tmp_0 < 5; p05_tmp_0++) {
-    s += rtb_Switch[p05_tmp_0 + 1];
+    psi += rtb_Switch[p05_tmp_0 + 1];
   }
 
-  if (s == 0.0) {
+  if (psi == 0.0) {
     // Switch: '<S2>/Switch' incorporates:
     //   Inport: '<Root>/ori_theta_arr'
 
@@ -1970,13 +1954,19 @@ void URController::step()
     rtb_Switch[4] = rtU.ori_theta_arr[4];
     rtb_Switch[5] = rtU.ori_theta_arr[5];
   } else {
-    // Switch: '<S2>/Switch'
-    rtb_Switch[0] = psi;
-    rtb_Switch[1] = phi;
-    rtb_Switch[2] = rtb_TransferFcn9;
-    rtb_Switch[3] = rtb_TransferFcn10;
-    rtb_Switch[4] = rtb_TransferFcn11;
-    rtb_Switch[5] = rtb_TransferFcn12;
+    // Switch: '<S2>/Switch' incorporates:
+    //   Integrator: '<S10>/Integrator'
+    //   Integrator: '<S11>/Integrator'
+    //   Integrator: '<S12>/Integrator'
+    //   Integrator: '<S8>/Integrator'
+    //   Integrator: '<S9>/Integrator'
+
+    rtb_Switch[0] = rtX.Integrator_CSTATE;
+    rtb_Switch[1] = rtX.Integrator_CSTATE_g;
+    rtb_Switch[2] = rtX.Integrator_CSTATE_o;
+    rtb_Switch[3] = rtX.Integrator_CSTATE_c;
+    rtb_Switch[4] = rtX.Integrator_CSTATE_k;
+    rtb_Switch[5] = rtX.Integrator_CSTATE_gj;
   }
 
   // MATLAB Function: '<S5>/MATLAB Function2'
@@ -1993,31 +1983,31 @@ void URController::step()
 
   for (p05_tmp_0 = 0; p05_tmp_0 < 8; p05_tmp_0++) {
     xpageoffset = p05_tmp_0 * 6;
-    s = y[xpageoffset];
+    psi = y[xpageoffset];
     for (rtb_theta_tmp = 0; rtb_theta_tmp < 5; rtb_theta_tmp++) {
-      s += y[(xpageoffset + rtb_theta_tmp) + 1];
+      psi += y[(xpageoffset + rtb_theta_tmp) + 1];
     }
 
-    varargin_1[p05_tmp_0] = s;
+    varargin_1[p05_tmp_0] = psi;
   }
 
   cy = varargin_1[0];
   p05_tmp_0 = 0;
   for (xpageoffset = 0; xpageoffset < 7; xpageoffset++) {
-    s = varargin_1[xpageoffset + 1];
-    if (cy > s) {
-      cy = s;
+    psi = varargin_1[xpageoffset + 1];
+    if (cy > psi) {
+      cy = psi;
       p05_tmp_0 = xpageoffset + 1;
     }
   }
 
   // MATLAB Function: '<Root>/MATLAB Function'
-  s = rtb_gd[10] * rtb_gd[10] + rtb_gd[9] * rtb_gd[9];
-  cy = std::sqrt(s);
-  rtY.Output1[0] = std::atan2(rtb_gd[4], rtb_gd[0]);
-  rtY.Output1[1] = std::atan2(-rtb_gd[8], cy);
-  rtY.Output1[2] = std::atan2(rtb_gd[9], rtb_gd[10]);
-  if (s < 2.2204460492503131E-15) {
+  psi = rtb_gd[10] * rtb_gd[10] + rtb_gd[9] * rtb_gd[9];
+  cy = std::sqrt(psi);
+  rtY.ori_arr[0] = std::atan2(rtb_gd[4], rtb_gd[0]);
+  rtY.ori_arr[1] = std::atan2(-rtb_gd[8], cy);
+  rtY.ori_arr[2] = std::atan2(rtb_gd[9], rtb_gd[10]);
+  if (psi < 2.2204460492503131E-15) {
     xpageoffset = 0;
     for (i = 0; i < 1; i++) {
       xpageoffset++;
@@ -2080,29 +2070,29 @@ void URController::step()
     }
 
     if (csz_idx_2 - 1 >= 0) {
-      rtY.Output1[0] = varargin_1_data;
+      rtY.ori_arr[0] = varargin_1_data;
     }
 
     if (reshapes[1].f1.size[2] - 1 >= 0) {
-      rtY.Output1[1] = reshapes[1].f1.data;
+      rtY.ori_arr[1] = reshapes[1].f1.data;
     }
 
-    rtY.Output1[2] = 0.0;
+    rtY.ori_arr[2] = 0.0;
   }
 
-  rtY.Output1[0] = -rtY.Output1[0];
-  rtY.Output1[1] = -rtY.Output1[1];
-  rtY.Output1[2] = -rtY.Output1[2];
-  s = rtY.Output1[0];
-  rtY.Output1[0] = rtY.Output1[2];
-  rtY.Output1[2] = s;
+  rtY.ori_arr[0] = -rtY.ori_arr[0];
+  rtY.ori_arr[1] = -rtY.ori_arr[1];
+  rtY.ori_arr[2] = -rtY.ori_arr[2];
+  psi = rtY.ori_arr[0];
+  rtY.ori_arr[0] = rtY.ori_arr[2];
+  rtY.ori_arr[2] = psi;
 
-  // Outport: '<Root>/Output' incorporates:
+  // Outport: '<Root>/pos_arr' incorporates:
   //   MATLAB Function: '<Root>/MATLAB Function'
 
-  rtY.Output[0] = rtb_gd[12];
-  rtY.Output[1] = rtb_gd[13];
-  rtY.Output[2] = rtb_gd[14];
+  rtY.pos_arr[0] = rtb_gd[12];
+  rtY.pos_arr[1] = rtb_gd[13];
+  rtY.pos_arr[2] = rtb_gd[14];
   if (rtmIsMajorTimeStep((&rtM))) {
     // MATLAB Function: '<S13>/MATLAB Function' incorporates:
     //   Constant: '<S13>/Constant'
@@ -2113,8 +2103,8 @@ void URController::step()
     //   MATLAB Function: '<S5>/MATLAB Function2'
 
     MATLABFunction(rtb_theta[6 * p05_tmp_0], rtDW.DelayOneStep2_DSTATE,
-                   rtDW.DelayOneStep3_DSTATE, 100.0, 180.0, 0.001,
-                   &rtB.sf_MATLABFunction_f, &rtDW.sf_MATLABFunction_f);
+                   rtDW.DelayOneStep3_DSTATE, 300.0, 180.0, 0.001,
+                   &rtB.sf_MATLABFunction_j, &rtDW.sf_MATLABFunction_j);
   }
 
   // MATLAB Function: '<S13>/MATLAB Function1' incorporates:
@@ -2122,35 +2112,58 @@ void URController::step()
   //   Constant: '<S13>/Constant2'
   //   MATLAB Function: '<S5>/MATLAB Function2'
 
-  MATLABFunction1(rtB.sf_MATLABFunction_f.tB, rtB.sf_MATLABFunction_f.dB,
-                  rtB.sf_MATLABFunction_f.tA, rtB.sf_MATLABFunction_f.dA,
-                  rtB.sf_MATLABFunction_f.dCV, rtB.sf_MATLABFunction_f.tCV,
-                  rtB.sf_MATLABFunction_f.s, rtB.sf_MATLABFunction_f.vT,
-                  rtB.sf_MATLABFunction_f.tD, rtB.sf_MATLABFunction_f.sM,
-                  rtB.sf_MATLABFunction_f.t, rtb_theta[6 * p05_tmp_0],
-                  rtB.sf_MATLABFunction_f.oP, rtB.sf_MATLABFunction_f.oV, 100.0,
-                  180.0, &rtB.pos_i, &rtB.vel_j2, &s);
+  MATLABFunction1(rtB.sf_MATLABFunction_j.tB, rtB.sf_MATLABFunction_j.dB,
+                  rtB.sf_MATLABFunction_j.tA, rtB.sf_MATLABFunction_j.dA,
+                  rtB.sf_MATLABFunction_j.dCV, rtB.sf_MATLABFunction_j.tCV,
+                  rtB.sf_MATLABFunction_j.s, rtB.sf_MATLABFunction_j.vT,
+                  rtB.sf_MATLABFunction_j.tD, rtB.sf_MATLABFunction_j.sM,
+                  rtB.sf_MATLABFunction_j.t, rtb_theta[6 * p05_tmp_0],
+                  rtB.sf_MATLABFunction_j.oP, rtB.sf_MATLABFunction_j.oV, 300.0,
+                  180.0, &rtB.pos_d, &rtB.vel_c3, &psi);
 
-  // Sum: '<S4>/Sum13'
-  s = rtB.pos_i - psi;
+  // MATLAB Function: '<S7>/voltageConvert' incorporates:
+  //   Constant: '<S7>/Constant'
+  //   Constant: '<S7>/Constant1'
 
-  // Gain: '<S149>/Filter Coefficient' incorporates:
-  //   Gain: '<S140>/Derivative Gain'
-  //   Integrator: '<S141>/Filter'
-  //   Sum: '<S141>/SumD'
+  voltageConvert(rtB.vel_c3, 180.0, 12.0, &psi);
 
-  rtB.FilterCoefficient = (-0.0900818829328251 * s - rtX.Filter_CSTATE) *
-    186.823463181414;
+  // TransferFcn: '<S7>/trans func2'
+  cy = 361.0 * rtX.transfunc2_CSTATE[1];
 
-  // Sum: '<S155>/Sum' incorporates:
-  //   Gain: '<S151>/Proportional Gain'
-  //   Integrator: '<S146>/Integrator'
+  // Sum: '<S7>/Sum14' incorporates:
+  //   Integrator: '<S7>/Integrator'
+  //   Sum: '<S7>/Sum15'
 
-  rtB.Sum = (16.8294093394131 * s + rtX.Integrator_CSTATE) +
+  phi = ((rtB.pos_d - rtX.Integrator_CSTATE) + psi) - cy;
+
+  // Gain: '<S56>/Filter Coefficient' incorporates:
+  //   Gain: '<S47>/Derivative Gain'
+  //   Integrator: '<S48>/Filter'
+  //   Sum: '<S48>/SumD'
+
+  rtB.FilterCoefficient = (0.327956120616846 * phi - rtX.Filter_CSTATE) *
+    454.516416693375;
+
+  // Sum: '<S12>/Sum14' incorporates:
+  //   Integrator: '<S53>/Integrator'
+
+  psi = rtX.Integrator_CSTATE_m;
+
+  // Sum: '<S62>/Sum' incorporates:
+  //   Gain: '<S58>/Proportional Gain'
+  //   Integrator: '<S53>/Integrator'
+
+  rtB.Sum = (10.5857290910674 * phi + rtX.Integrator_CSTATE_m) +
     rtB.FilterCoefficient;
 
-  // Gain: '<S143>/Integral Gain'
-  rtB.IntegralGain = 84.3967388731047 * s;
+  // Gain: '<S50>/Integral Gain'
+  rtB.IntegralGain = 78.2339953359067 * phi;
+
+  // MATLAB Function: '<S7>/velConvert' incorporates:
+  //   Constant: '<S7>/Constant2'
+  //   Constant: '<S7>/Constant3'
+
+  velConvert(cy, 180.0, 12.0, &rtB.vel_cp);
   if (rtmIsMajorTimeStep((&rtM))) {
     // MATLAB Function: '<S14>/MATLAB Function' incorporates:
     //   Constant: '<S14>/Constant'
@@ -2160,9 +2173,9 @@ void URController::step()
     //   Delay: '<S14>/Delay One Step3'
     //   MATLAB Function: '<S5>/MATLAB Function2'
 
-    MATLABFunction(rtb_theta[6 * p05_tmp_0 + 1], rtDW.DelayOneStep2_DSTATE_e,
-                   rtDW.DelayOneStep3_DSTATE_h, 100.0, 180.0, 0.001,
-                   &rtB.sf_MATLABFunction_m, &rtDW.sf_MATLABFunction_m);
+    MATLABFunction(rtb_theta[6 * p05_tmp_0 + 1], rtDW.DelayOneStep2_DSTATE_i,
+                   rtDW.DelayOneStep3_DSTATE_m, 300.0, 180.0, 0.001,
+                   &rtB.sf_MATLABFunction_o, &rtDW.sf_MATLABFunction_o);
   }
 
   // MATLAB Function: '<S14>/MATLAB Function1' incorporates:
@@ -2170,35 +2183,54 @@ void URController::step()
   //   Constant: '<S14>/Constant2'
   //   MATLAB Function: '<S5>/MATLAB Function2'
 
-  MATLABFunction1(rtB.sf_MATLABFunction_m.tB, rtB.sf_MATLABFunction_m.dB,
-                  rtB.sf_MATLABFunction_m.tA, rtB.sf_MATLABFunction_m.dA,
-                  rtB.sf_MATLABFunction_m.dCV, rtB.sf_MATLABFunction_m.tCV,
-                  rtB.sf_MATLABFunction_m.s, rtB.sf_MATLABFunction_m.vT,
-                  rtB.sf_MATLABFunction_m.tD, rtB.sf_MATLABFunction_m.sM,
-                  rtB.sf_MATLABFunction_m.t, rtb_theta[6 * p05_tmp_0 + 1],
-                  rtB.sf_MATLABFunction_m.oP, rtB.sf_MATLABFunction_m.oV, 100.0,
-                  180.0, &rtB.pos_g, &rtB.vel_j, &s);
+  MATLABFunction1(rtB.sf_MATLABFunction_o.tB, rtB.sf_MATLABFunction_o.dB,
+                  rtB.sf_MATLABFunction_o.tA, rtB.sf_MATLABFunction_o.dA,
+                  rtB.sf_MATLABFunction_o.dCV, rtB.sf_MATLABFunction_o.tCV,
+                  rtB.sf_MATLABFunction_o.s, rtB.sf_MATLABFunction_o.vT,
+                  rtB.sf_MATLABFunction_o.tD, rtB.sf_MATLABFunction_o.sM,
+                  rtB.sf_MATLABFunction_o.t, rtb_theta[6 * p05_tmp_0 + 1],
+                  rtB.sf_MATLABFunction_o.oP, rtB.sf_MATLABFunction_o.oV, 300.0,
+                  180.0, &rtB.pos_ms, &rtB.vel_c, &psi);
 
-  // Sum: '<S4>/Sum7'
-  s = rtB.pos_g - phi;
+  // MATLAB Function: '<S8>/voltageConvert' incorporates:
+  //   Constant: '<S8>/Constant'
+  //   Constant: '<S8>/Constant1'
 
-  // Gain: '<S197>/Filter Coefficient' incorporates:
-  //   Gain: '<S188>/Derivative Gain'
-  //   Integrator: '<S189>/Filter'
-  //   Sum: '<S189>/SumD'
+  voltageConvert(rtB.vel_c, 180.0, 12.0, &psi);
 
-  rtB.FilterCoefficient_l = (-0.0900818829328251 * s - rtX.Filter_CSTATE_k) *
-    186.823463181414;
+  // TransferFcn: '<S8>/trans func2'
+  cy = 361.0 * rtX.transfunc2_CSTATE_o[1];
 
-  // Sum: '<S203>/Sum' incorporates:
-  //   Gain: '<S199>/Proportional Gain'
-  //   Integrator: '<S194>/Integrator'
+  // Sum: '<S12>/Sum14' incorporates:
+  //   Integrator: '<S8>/Integrator'
+  //   Sum: '<S8>/Sum14'
+  //   Sum: '<S8>/Sum15'
 
-  rtB.Sum_d = (16.8294093394131 * s + rtX.Integrator_CSTATE_d) +
-    rtB.FilterCoefficient_l;
+  psi = ((rtB.pos_ms - rtX.Integrator_CSTATE_g) + psi) - cy;
 
-  // Gain: '<S191>/Integral Gain'
-  rtB.IntegralGain_o = 84.3967388731047 * s;
+  // Gain: '<S107>/Filter Coefficient' incorporates:
+  //   Gain: '<S98>/Derivative Gain'
+  //   Integrator: '<S99>/Filter'
+  //   Sum: '<S99>/SumD'
+
+  rtB.FilterCoefficient_c = (0.327956120616846 * psi - rtX.Filter_CSTATE_a) *
+    454.516416693375;
+
+  // Sum: '<S113>/Sum' incorporates:
+  //   Gain: '<S109>/Proportional Gain'
+  //   Integrator: '<S104>/Integrator'
+
+  rtB.Sum_b = (10.5857290910674 * psi + rtX.Integrator_CSTATE_j) +
+    rtB.FilterCoefficient_c;
+
+  // Gain: '<S101>/Integral Gain'
+  rtB.IntegralGain_f = 78.2339953359067 * psi;
+
+  // MATLAB Function: '<S8>/velConvert' incorporates:
+  //   Constant: '<S8>/Constant2'
+  //   Constant: '<S8>/Constant3'
+
+  velConvert(cy, 180.0, 12.0, &rtB.vel_k);
   if (rtmIsMajorTimeStep((&rtM))) {
     // MATLAB Function: '<S15>/MATLAB Function' incorporates:
     //   Constant: '<S15>/Constant'
@@ -2209,8 +2241,8 @@ void URController::step()
     //   MATLAB Function: '<S5>/MATLAB Function2'
 
     MATLABFunction(rtb_theta[6 * p05_tmp_0 + 2], rtDW.DelayOneStep2_DSTATE_p,
-                   rtDW.DelayOneStep3_DSTATE_i, 100.0, 180.0, 0.001,
-                   &rtB.sf_MATLABFunction_n, &rtDW.sf_MATLABFunction_n);
+                   rtDW.DelayOneStep3_DSTATE_e, 300.0, 180.0, 0.001,
+                   &rtB.sf_MATLABFunction_c, &rtDW.sf_MATLABFunction_c);
   }
 
   // MATLAB Function: '<S15>/MATLAB Function1' incorporates:
@@ -2218,35 +2250,54 @@ void URController::step()
   //   Constant: '<S15>/Constant2'
   //   MATLAB Function: '<S5>/MATLAB Function2'
 
-  MATLABFunction1(rtB.sf_MATLABFunction_n.tB, rtB.sf_MATLABFunction_n.dB,
-                  rtB.sf_MATLABFunction_n.tA, rtB.sf_MATLABFunction_n.dA,
-                  rtB.sf_MATLABFunction_n.dCV, rtB.sf_MATLABFunction_n.tCV,
-                  rtB.sf_MATLABFunction_n.s, rtB.sf_MATLABFunction_n.vT,
-                  rtB.sf_MATLABFunction_n.tD, rtB.sf_MATLABFunction_n.sM,
-                  rtB.sf_MATLABFunction_n.t, rtb_theta[6 * p05_tmp_0 + 2],
-                  rtB.sf_MATLABFunction_n.oP, rtB.sf_MATLABFunction_n.oV, 100.0,
-                  180.0, &rtB.pos_a5, &rtB.vel_i, &s);
+  MATLABFunction1(rtB.sf_MATLABFunction_c.tB, rtB.sf_MATLABFunction_c.dB,
+                  rtB.sf_MATLABFunction_c.tA, rtB.sf_MATLABFunction_c.dA,
+                  rtB.sf_MATLABFunction_c.dCV, rtB.sf_MATLABFunction_c.tCV,
+                  rtB.sf_MATLABFunction_c.s, rtB.sf_MATLABFunction_c.vT,
+                  rtB.sf_MATLABFunction_c.tD, rtB.sf_MATLABFunction_c.sM,
+                  rtB.sf_MATLABFunction_c.t, rtb_theta[6 * p05_tmp_0 + 2],
+                  rtB.sf_MATLABFunction_c.oP, rtB.sf_MATLABFunction_c.oV, 300.0,
+                  180.0, &rtB.pos_n, &rtB.vel_i, &psi);
 
-  // Sum: '<S4>/Sum8'
-  s = rtB.pos_a5 - rtb_TransferFcn9;
+  // MATLAB Function: '<S9>/voltageConvert' incorporates:
+  //   Constant: '<S9>/Constant'
+  //   Constant: '<S9>/Constant1'
 
-  // Gain: '<S245>/Filter Coefficient' incorporates:
-  //   Gain: '<S236>/Derivative Gain'
-  //   Integrator: '<S237>/Filter'
-  //   Sum: '<S237>/SumD'
+  voltageConvert(rtB.vel_i, 180.0, 12.0, &psi);
 
-  rtB.FilterCoefficient_f = (-0.0900818829328251 * s - rtX.Filter_CSTATE_j) *
-    186.823463181414;
+  // TransferFcn: '<S9>/trans func2'
+  cy = 361.0 * rtX.transfunc2_CSTATE_ow[1];
 
-  // Sum: '<S251>/Sum' incorporates:
-  //   Gain: '<S247>/Proportional Gain'
-  //   Integrator: '<S242>/Integrator'
+  // Sum: '<S12>/Sum14' incorporates:
+  //   Integrator: '<S9>/Integrator'
+  //   Sum: '<S9>/Sum14'
+  //   Sum: '<S9>/Sum15'
 
-  rtB.Sum_f = (16.8294093394131 * s + rtX.Integrator_CSTATE_f) +
-    rtB.FilterCoefficient_f;
+  psi = ((rtB.pos_n - rtX.Integrator_CSTATE_o) + psi) - cy;
 
-  // Gain: '<S239>/Integral Gain'
-  rtB.IntegralGain_n = 84.3967388731047 * s;
+  // Gain: '<S158>/Filter Coefficient' incorporates:
+  //   Gain: '<S149>/Derivative Gain'
+  //   Integrator: '<S150>/Filter'
+  //   Sum: '<S150>/SumD'
+
+  rtB.FilterCoefficient_cd = (0.327956120616846 * psi - rtX.Filter_CSTATE_c) *
+    454.516416693375;
+
+  // Sum: '<S164>/Sum' incorporates:
+  //   Gain: '<S160>/Proportional Gain'
+  //   Integrator: '<S155>/Integrator'
+
+  rtB.Sum_k = (10.5857290910674 * psi + rtX.Integrator_CSTATE_a) +
+    rtB.FilterCoefficient_cd;
+
+  // Gain: '<S152>/Integral Gain'
+  rtB.IntegralGain_c = 78.2339953359067 * psi;
+
+  // MATLAB Function: '<S9>/velConvert' incorporates:
+  //   Constant: '<S9>/Constant2'
+  //   Constant: '<S9>/Constant3'
+
+  velConvert(cy, 180.0, 12.0, &rtB.vel_ha);
   if (rtmIsMajorTimeStep((&rtM))) {
     // MATLAB Function: '<S16>/MATLAB Function' incorporates:
     //   Constant: '<S16>/Constant'
@@ -2256,9 +2307,9 @@ void URController::step()
     //   Delay: '<S16>/Delay One Step3'
     //   MATLAB Function: '<S5>/MATLAB Function2'
 
-    MATLABFunction(rtb_theta[6 * p05_tmp_0 + 3], rtDW.DelayOneStep2_DSTATE_f,
-                   rtDW.DelayOneStep3_DSTATE_l, 100.0, 180.0, 0.001,
-                   &rtB.sf_MATLABFunction_fe, &rtDW.sf_MATLABFunction_fe);
+    MATLABFunction(rtb_theta[6 * p05_tmp_0 + 3], rtDW.DelayOneStep2_DSTATE_m,
+                   rtDW.DelayOneStep3_DSTATE_p, 300.0, 180.0, 0.001,
+                   &rtB.sf_MATLABFunction_ow, &rtDW.sf_MATLABFunction_ow);
   }
 
   // MATLAB Function: '<S16>/MATLAB Function1' incorporates:
@@ -2266,35 +2317,54 @@ void URController::step()
   //   Constant: '<S16>/Constant2'
   //   MATLAB Function: '<S5>/MATLAB Function2'
 
-  MATLABFunction1(rtB.sf_MATLABFunction_fe.tB, rtB.sf_MATLABFunction_fe.dB,
-                  rtB.sf_MATLABFunction_fe.tA, rtB.sf_MATLABFunction_fe.dA,
-                  rtB.sf_MATLABFunction_fe.dCV, rtB.sf_MATLABFunction_fe.tCV,
-                  rtB.sf_MATLABFunction_fe.s, rtB.sf_MATLABFunction_fe.vT,
-                  rtB.sf_MATLABFunction_fe.tD, rtB.sf_MATLABFunction_fe.sM,
-                  rtB.sf_MATLABFunction_fe.t, rtb_theta[6 * p05_tmp_0 + 3],
-                  rtB.sf_MATLABFunction_fe.oP, rtB.sf_MATLABFunction_fe.oV,
-                  100.0, 180.0, &rtB.pos_h, &rtB.vel_es, &s);
+  MATLABFunction1(rtB.sf_MATLABFunction_ow.tB, rtB.sf_MATLABFunction_ow.dB,
+                  rtB.sf_MATLABFunction_ow.tA, rtB.sf_MATLABFunction_ow.dA,
+                  rtB.sf_MATLABFunction_ow.dCV, rtB.sf_MATLABFunction_ow.tCV,
+                  rtB.sf_MATLABFunction_ow.s, rtB.sf_MATLABFunction_ow.vT,
+                  rtB.sf_MATLABFunction_ow.tD, rtB.sf_MATLABFunction_ow.sM,
+                  rtB.sf_MATLABFunction_ow.t, rtb_theta[6 * p05_tmp_0 + 3],
+                  rtB.sf_MATLABFunction_ow.oP, rtB.sf_MATLABFunction_ow.oV,
+                  300.0, 180.0, &rtB.pos_m, &rtB.vel_j, &psi);
 
-  // Sum: '<S4>/Sum9'
-  s = rtB.pos_h - rtb_TransferFcn10;
+  // MATLAB Function: '<S10>/voltageConvert' incorporates:
+  //   Constant: '<S10>/Constant'
+  //   Constant: '<S10>/Constant1'
 
-  // Gain: '<S293>/Filter Coefficient' incorporates:
-  //   Gain: '<S284>/Derivative Gain'
-  //   Integrator: '<S285>/Filter'
-  //   Sum: '<S285>/SumD'
+  voltageConvert(rtB.vel_j, 180.0, 12.0, &psi);
 
-  rtB.FilterCoefficient_fr = (-0.0900818829328251 * s - rtX.Filter_CSTATE_c) *
-    186.823463181414;
+  // TransferFcn: '<S10>/trans func2'
+  cy = 361.0 * rtX.transfunc2_CSTATE_c[1];
 
-  // Sum: '<S299>/Sum' incorporates:
-  //   Gain: '<S295>/Proportional Gain'
-  //   Integrator: '<S290>/Integrator'
+  // Sum: '<S12>/Sum14' incorporates:
+  //   Integrator: '<S10>/Integrator'
+  //   Sum: '<S10>/Sum14'
+  //   Sum: '<S10>/Sum15'
 
-  rtB.Sum_h = (16.8294093394131 * s + rtX.Integrator_CSTATE_g) +
-    rtB.FilterCoefficient_fr;
+  psi = ((rtB.pos_m - rtX.Integrator_CSTATE_c) + psi) - cy;
 
-  // Gain: '<S287>/Integral Gain'
-  rtB.IntegralGain_a = 84.3967388731047 * s;
+  // Gain: '<S209>/Filter Coefficient' incorporates:
+  //   Gain: '<S200>/Derivative Gain'
+  //   Integrator: '<S201>/Filter'
+  //   Sum: '<S201>/SumD'
+
+  rtB.FilterCoefficient_m = (0.327956120616846 * psi - rtX.Filter_CSTATE_f) *
+    454.516416693375;
+
+  // Sum: '<S215>/Sum' incorporates:
+  //   Gain: '<S211>/Proportional Gain'
+  //   Integrator: '<S206>/Integrator'
+
+  rtB.Sum_j = (10.5857290910674 * psi + rtX.Integrator_CSTATE_an) +
+    rtB.FilterCoefficient_m;
+
+  // Gain: '<S203>/Integral Gain'
+  rtB.IntegralGain_l = 78.2339953359067 * psi;
+
+  // MATLAB Function: '<S10>/velConvert' incorporates:
+  //   Constant: '<S10>/Constant2'
+  //   Constant: '<S10>/Constant3'
+
+  velConvert(cy, 180.0, 12.0, &rtB.vel_cx);
   if (rtmIsMajorTimeStep((&rtM))) {
     // MATLAB Function: '<S17>/MATLAB Function' incorporates:
     //   Constant: '<S17>/Constant'
@@ -2304,9 +2374,9 @@ void URController::step()
     //   Delay: '<S17>/Delay One Step3'
     //   MATLAB Function: '<S5>/MATLAB Function2'
 
-    MATLABFunction(rtb_theta[6 * p05_tmp_0 + 4], rtDW.DelayOneStep2_DSTATE_i,
-                   rtDW.DelayOneStep3_DSTATE_f, 100.0, 180.0, 0.001,
-                   &rtB.sf_MATLABFunction_e, &rtDW.sf_MATLABFunction_e);
+    MATLABFunction(rtb_theta[6 * p05_tmp_0 + 4], rtDW.DelayOneStep2_DSTATE_f,
+                   rtDW.DelayOneStep3_DSTATE_mr, 300.0, 180.0, 0.001,
+                   &rtB.sf_MATLABFunction_cn, &rtDW.sf_MATLABFunction_cn);
   }
 
   // MATLAB Function: '<S17>/MATLAB Function1' incorporates:
@@ -2314,35 +2384,54 @@ void URController::step()
   //   Constant: '<S17>/Constant2'
   //   MATLAB Function: '<S5>/MATLAB Function2'
 
-  MATLABFunction1(rtB.sf_MATLABFunction_e.tB, rtB.sf_MATLABFunction_e.dB,
-                  rtB.sf_MATLABFunction_e.tA, rtB.sf_MATLABFunction_e.dA,
-                  rtB.sf_MATLABFunction_e.dCV, rtB.sf_MATLABFunction_e.tCV,
-                  rtB.sf_MATLABFunction_e.s, rtB.sf_MATLABFunction_e.vT,
-                  rtB.sf_MATLABFunction_e.tD, rtB.sf_MATLABFunction_e.sM,
-                  rtB.sf_MATLABFunction_e.t, rtb_theta[6 * p05_tmp_0 + 4],
-                  rtB.sf_MATLABFunction_e.oP, rtB.sf_MATLABFunction_e.oV, 100.0,
-                  180.0, &rtB.pos_a, &rtB.vel_e, &s);
+  MATLABFunction1(rtB.sf_MATLABFunction_cn.tB, rtB.sf_MATLABFunction_cn.dB,
+                  rtB.sf_MATLABFunction_cn.tA, rtB.sf_MATLABFunction_cn.dA,
+                  rtB.sf_MATLABFunction_cn.dCV, rtB.sf_MATLABFunction_cn.tCV,
+                  rtB.sf_MATLABFunction_cn.s, rtB.sf_MATLABFunction_cn.vT,
+                  rtB.sf_MATLABFunction_cn.tD, rtB.sf_MATLABFunction_cn.sM,
+                  rtB.sf_MATLABFunction_cn.t, rtb_theta[6 * p05_tmp_0 + 4],
+                  rtB.sf_MATLABFunction_cn.oP, rtB.sf_MATLABFunction_cn.oV,
+                  300.0, 180.0, &rtB.pos_l, &rtB.vel_h, &psi);
 
-  // Sum: '<S4>/Sum10'
-  s = rtB.pos_a - rtb_TransferFcn11;
+  // MATLAB Function: '<S11>/voltageConvert' incorporates:
+  //   Constant: '<S11>/Constant'
+  //   Constant: '<S11>/Constant1'
 
-  // Gain: '<S53>/Filter Coefficient' incorporates:
-  //   Gain: '<S44>/Derivative Gain'
-  //   Integrator: '<S45>/Filter'
-  //   Sum: '<S45>/SumD'
+  voltageConvert(rtB.vel_h, 180.0, 12.0, &psi);
 
-  rtB.FilterCoefficient_b = (-0.0900818829328251 * s - rtX.Filter_CSTATE_d) *
-    186.823463181414;
+  // TransferFcn: '<S11>/trans func2'
+  cy = 361.0 * rtX.transfunc2_CSTATE_j[1];
 
-  // Sum: '<S59>/Sum' incorporates:
-  //   Gain: '<S55>/Proportional Gain'
-  //   Integrator: '<S50>/Integrator'
+  // Sum: '<S12>/Sum14' incorporates:
+  //   Integrator: '<S11>/Integrator'
+  //   Sum: '<S11>/Sum14'
+  //   Sum: '<S11>/Sum15'
 
-  rtB.Sum_n = (16.8294093394131 * s + rtX.Integrator_CSTATE_di) +
-    rtB.FilterCoefficient_b;
+  psi = ((rtB.pos_l - rtX.Integrator_CSTATE_k) + psi) - cy;
 
-  // Gain: '<S47>/Integral Gain'
-  rtB.IntegralGain_os = 84.3967388731047 * s;
+  // Gain: '<S260>/Filter Coefficient' incorporates:
+  //   Gain: '<S251>/Derivative Gain'
+  //   Integrator: '<S252>/Filter'
+  //   Sum: '<S252>/SumD'
+
+  rtB.FilterCoefficient_d = (0.327956120616846 * psi - rtX.Filter_CSTATE_m) *
+    454.516416693375;
+
+  // Sum: '<S266>/Sum' incorporates:
+  //   Gain: '<S262>/Proportional Gain'
+  //   Integrator: '<S257>/Integrator'
+
+  rtB.Sum_m = (10.5857290910674 * psi + rtX.Integrator_CSTATE_ji) +
+    rtB.FilterCoefficient_d;
+
+  // Gain: '<S254>/Integral Gain'
+  rtB.IntegralGain_g = 78.2339953359067 * psi;
+
+  // MATLAB Function: '<S11>/velConvert' incorporates:
+  //   Constant: '<S11>/Constant2'
+  //   Constant: '<S11>/Constant3'
+
+  velConvert(cy, 180.0, 12.0, &rtB.vel_hy);
   if (rtmIsMajorTimeStep((&rtM))) {
     // MATLAB Function: '<S18>/MATLAB Function' incorporates:
     //   Constant: '<S18>/Constant'
@@ -2352,9 +2441,9 @@ void URController::step()
     //   Delay: '<S18>/Delay One Step3'
     //   MATLAB Function: '<S5>/MATLAB Function2'
 
-    MATLABFunction(rtb_theta[6 * p05_tmp_0 + 5], rtDW.DelayOneStep2_DSTATE_em,
-                   rtDW.DelayOneStep3_DSTATE_fz, 100.0, 180.0, 0.001,
-                   &rtB.sf_MATLABFunction_i, &rtDW.sf_MATLABFunction_i);
+    MATLABFunction(rtb_theta[6 * p05_tmp_0 + 5], rtDW.DelayOneStep2_DSTATE_b,
+                   rtDW.DelayOneStep3_DSTATE_k, 300.0, 180.0, 0.001,
+                   &rtB.sf_MATLABFunction_e, &rtDW.sf_MATLABFunction_e);
   }
 
   // MATLAB Function: '<S18>/MATLAB Function1' incorporates:
@@ -2362,80 +2451,105 @@ void URController::step()
   //   Constant: '<S18>/Constant2'
   //   MATLAB Function: '<S5>/MATLAB Function2'
 
-  MATLABFunction1(rtB.sf_MATLABFunction_i.tB, rtB.sf_MATLABFunction_i.dB,
-                  rtB.sf_MATLABFunction_i.tA, rtB.sf_MATLABFunction_i.dA,
-                  rtB.sf_MATLABFunction_i.dCV, rtB.sf_MATLABFunction_i.tCV,
-                  rtB.sf_MATLABFunction_i.s, rtB.sf_MATLABFunction_i.vT,
-                  rtB.sf_MATLABFunction_i.tD, rtB.sf_MATLABFunction_i.sM,
-                  rtB.sf_MATLABFunction_i.t, rtb_theta[6 * p05_tmp_0 + 5],
-                  rtB.sf_MATLABFunction_i.oP, rtB.sf_MATLABFunction_i.oV, 100.0,
-                  180.0, &rtB.pos, &rtB.vel, &s);
+  MATLABFunction1(rtB.sf_MATLABFunction_e.tB, rtB.sf_MATLABFunction_e.dB,
+                  rtB.sf_MATLABFunction_e.tA, rtB.sf_MATLABFunction_e.dA,
+                  rtB.sf_MATLABFunction_e.dCV, rtB.sf_MATLABFunction_e.tCV,
+                  rtB.sf_MATLABFunction_e.s, rtB.sf_MATLABFunction_e.vT,
+                  rtB.sf_MATLABFunction_e.tD, rtB.sf_MATLABFunction_e.sM,
+                  rtB.sf_MATLABFunction_e.t, rtb_theta[6 * p05_tmp_0 + 5],
+                  rtB.sf_MATLABFunction_e.oP, rtB.sf_MATLABFunction_e.oV, 300.0,
+                  180.0, &rtB.pos, &rtB.vel, &psi);
 
-  // Sum: '<S4>/Sum11'
-  s = rtB.pos - rtb_TransferFcn12;
+  // MATLAB Function: '<S12>/voltageConvert' incorporates:
+  //   Constant: '<S12>/Constant'
+  //   Constant: '<S12>/Constant1'
 
-  // Gain: '<S101>/Filter Coefficient' incorporates:
-  //   Gain: '<S92>/Derivative Gain'
-  //   Integrator: '<S93>/Filter'
-  //   Sum: '<S93>/SumD'
+  voltageConvert(rtB.vel, 180.0, 12.0, &psi);
 
-  rtB.FilterCoefficient_g = (-0.0900818829328251 * s - rtX.Filter_CSTATE_i) *
-    186.823463181414;
+  // TransferFcn: '<S12>/trans func2'
+  cy = 361.0 * rtX.transfunc2_CSTATE_k[1];
 
-  // Sum: '<S107>/Sum' incorporates:
-  //   Gain: '<S103>/Proportional Gain'
-  //   Integrator: '<S98>/Integrator'
+  // Sum: '<S12>/Sum14' incorporates:
+  //   Integrator: '<S12>/Integrator'
+  //   Sum: '<S12>/Sum15'
 
-  rtB.Sum_o = (16.8294093394131 * s + rtX.Integrator_CSTATE_o) +
-    rtB.FilterCoefficient_g;
+  psi = ((rtB.pos - rtX.Integrator_CSTATE_gj) + psi) - cy;
 
-  // Gain: '<S95>/Integral Gain'
-  rtB.IntegralGain_i = 84.3967388731047 * s;
+  // Gain: '<S311>/Filter Coefficient' incorporates:
+  //   Gain: '<S302>/Derivative Gain'
+  //   Integrator: '<S303>/Filter'
+  //   Sum: '<S303>/SumD'
 
-  // Outport: '<Root>/actual_theta_arr'
-  rtY.actual_theta_arr[0] = psi;
-  rtY.actual_theta_arr[1] = phi;
-  rtY.actual_theta_arr[2] = rtb_TransferFcn9;
-  rtY.actual_theta_arr[3] = rtb_TransferFcn10;
-  rtY.actual_theta_arr[4] = rtb_TransferFcn11;
-  rtY.actual_theta_arr[5] = rtb_TransferFcn12;
+  rtB.FilterCoefficient_b = (0.327956120616846 * psi - rtX.Filter_CSTATE_n) *
+    454.516416693375;
+
+  // Sum: '<S317>/Sum' incorporates:
+  //   Gain: '<S313>/Proportional Gain'
+  //   Integrator: '<S308>/Integrator'
+
+  rtB.Sum_h = (10.5857290910674 * psi + rtX.Integrator_CSTATE_f) +
+    rtB.FilterCoefficient_b;
+
+  // Gain: '<S305>/Integral Gain'
+  rtB.IntegralGain_m = 78.2339953359067 * psi;
+
+  // MATLAB Function: '<S12>/velConvert' incorporates:
+  //   Constant: '<S12>/Constant2'
+  //   Constant: '<S12>/Constant3'
+
+  velConvert(cy, 180.0, 12.0, &rtB.vel_p);
+
+  // Outport: '<Root>/actual_theta_arr' incorporates:
+  //   Integrator: '<S10>/Integrator'
+  //   Integrator: '<S11>/Integrator'
+  //   Integrator: '<S12>/Integrator'
+  //   Integrator: '<S7>/Integrator'
+  //   Integrator: '<S8>/Integrator'
+  //   Integrator: '<S9>/Integrator'
+
+  rtY.actual_theta_arr[0] = rtX.Integrator_CSTATE;
+  rtY.actual_theta_arr[1] = rtX.Integrator_CSTATE_g;
+  rtY.actual_theta_arr[2] = rtX.Integrator_CSTATE_o;
+  rtY.actual_theta_arr[3] = rtX.Integrator_CSTATE_c;
+  rtY.actual_theta_arr[4] = rtX.Integrator_CSTATE_k;
+  rtY.actual_theta_arr[5] = rtX.Integrator_CSTATE_gj;
   if (rtmIsMajorTimeStep((&rtM))) {
     if (rtmIsMajorTimeStep((&rtM))) {
       // Update for Delay: '<S13>/Delay One Step2'
-      rtDW.DelayOneStep2_DSTATE = rtB.pos_i;
+      rtDW.DelayOneStep2_DSTATE = rtB.pos_d;
 
       // Update for Delay: '<S13>/Delay One Step3'
-      rtDW.DelayOneStep3_DSTATE = rtB.vel_j2;
+      rtDW.DelayOneStep3_DSTATE = rtB.vel_c3;
 
       // Update for Delay: '<S14>/Delay One Step2'
-      rtDW.DelayOneStep2_DSTATE_e = rtB.pos_g;
+      rtDW.DelayOneStep2_DSTATE_i = rtB.pos_ms;
 
       // Update for Delay: '<S14>/Delay One Step3'
-      rtDW.DelayOneStep3_DSTATE_h = rtB.vel_j;
+      rtDW.DelayOneStep3_DSTATE_m = rtB.vel_c;
 
       // Update for Delay: '<S15>/Delay One Step2'
-      rtDW.DelayOneStep2_DSTATE_p = rtB.pos_a5;
+      rtDW.DelayOneStep2_DSTATE_p = rtB.pos_n;
 
       // Update for Delay: '<S15>/Delay One Step3'
-      rtDW.DelayOneStep3_DSTATE_i = rtB.vel_i;
+      rtDW.DelayOneStep3_DSTATE_e = rtB.vel_i;
 
       // Update for Delay: '<S16>/Delay One Step2'
-      rtDW.DelayOneStep2_DSTATE_f = rtB.pos_h;
+      rtDW.DelayOneStep2_DSTATE_m = rtB.pos_m;
 
       // Update for Delay: '<S16>/Delay One Step3'
-      rtDW.DelayOneStep3_DSTATE_l = rtB.vel_es;
+      rtDW.DelayOneStep3_DSTATE_p = rtB.vel_j;
 
       // Update for Delay: '<S17>/Delay One Step2'
-      rtDW.DelayOneStep2_DSTATE_i = rtB.pos_a;
+      rtDW.DelayOneStep2_DSTATE_f = rtB.pos_l;
 
       // Update for Delay: '<S17>/Delay One Step3'
-      rtDW.DelayOneStep3_DSTATE_f = rtB.vel_e;
+      rtDW.DelayOneStep3_DSTATE_mr = rtB.vel_h;
 
       // Update for Delay: '<S18>/Delay One Step2'
-      rtDW.DelayOneStep2_DSTATE_em = rtB.pos;
+      rtDW.DelayOneStep2_DSTATE_b = rtB.pos;
 
       // Update for Delay: '<S18>/Delay One Step3'
-      rtDW.DelayOneStep3_DSTATE_fz = rtB.vel;
+      rtDW.DelayOneStep3_DSTATE_k = rtB.vel;
     }
   }                                    // end MajorTimeStep
 
@@ -2469,83 +2583,119 @@ void URController::URController_derivatives()
   URController::XDot *_rtXdot;
   _rtXdot = ((XDot *) (&rtM)->derivs);
 
-  // Derivatives for TransferFcn: '<S4>/Transfer Fcn7'
-  _rtXdot->TransferFcn7_CSTATE[0] = -7.0 * rtX.TransferFcn7_CSTATE[1];
-  _rtXdot->TransferFcn7_CSTATE[0] -= rtX.TransferFcn7_CSTATE[2];
-  _rtXdot->TransferFcn7_CSTATE[1] = rtX.TransferFcn7_CSTATE[0];
-  _rtXdot->TransferFcn7_CSTATE[2] = rtX.TransferFcn7_CSTATE[1];
-  _rtXdot->TransferFcn7_CSTATE[0] += rtB.Sum;
+  // Derivatives for Integrator: '<S7>/Integrator'
+  _rtXdot->Integrator_CSTATE = rtB.vel_cp;
 
-  // Derivatives for TransferFcn: '<S4>/Transfer Fcn8'
-  _rtXdot->TransferFcn8_CSTATE[0] = -7.0 * rtX.TransferFcn8_CSTATE[1];
-  _rtXdot->TransferFcn8_CSTATE[0] -= rtX.TransferFcn8_CSTATE[2];
-  _rtXdot->TransferFcn8_CSTATE[1] = rtX.TransferFcn8_CSTATE[0];
-  _rtXdot->TransferFcn8_CSTATE[2] = rtX.TransferFcn8_CSTATE[1];
-  _rtXdot->TransferFcn8_CSTATE[0] += rtB.Sum_d;
+  // Derivatives for Integrator: '<S8>/Integrator'
+  _rtXdot->Integrator_CSTATE_g = rtB.vel_k;
 
-  // Derivatives for TransferFcn: '<S4>/Transfer Fcn9'
-  _rtXdot->TransferFcn9_CSTATE[0] = -7.0 * rtX.TransferFcn9_CSTATE[1];
-  _rtXdot->TransferFcn9_CSTATE[0] -= rtX.TransferFcn9_CSTATE[2];
-  _rtXdot->TransferFcn9_CSTATE[1] = rtX.TransferFcn9_CSTATE[0];
-  _rtXdot->TransferFcn9_CSTATE[2] = rtX.TransferFcn9_CSTATE[1];
-  _rtXdot->TransferFcn9_CSTATE[0] += rtB.Sum_f;
+  // Derivatives for Integrator: '<S9>/Integrator'
+  _rtXdot->Integrator_CSTATE_o = rtB.vel_ha;
 
-  // Derivatives for TransferFcn: '<S4>/Transfer Fcn10'
-  _rtXdot->TransferFcn10_CSTATE[0] = -7.0 * rtX.TransferFcn10_CSTATE[1];
-  _rtXdot->TransferFcn10_CSTATE[0] -= rtX.TransferFcn10_CSTATE[2];
-  _rtXdot->TransferFcn10_CSTATE[1] = rtX.TransferFcn10_CSTATE[0];
-  _rtXdot->TransferFcn10_CSTATE[2] = rtX.TransferFcn10_CSTATE[1];
-  _rtXdot->TransferFcn10_CSTATE[0] += rtB.Sum_h;
+  // Derivatives for Integrator: '<S10>/Integrator'
+  _rtXdot->Integrator_CSTATE_c = rtB.vel_cx;
 
-  // Derivatives for TransferFcn: '<S4>/Transfer Fcn11'
-  _rtXdot->TransferFcn11_CSTATE[0] = -7.0 * rtX.TransferFcn11_CSTATE[1];
-  _rtXdot->TransferFcn11_CSTATE[0] -= rtX.TransferFcn11_CSTATE[2];
-  _rtXdot->TransferFcn11_CSTATE[1] = rtX.TransferFcn11_CSTATE[0];
-  _rtXdot->TransferFcn11_CSTATE[2] = rtX.TransferFcn11_CSTATE[1];
-  _rtXdot->TransferFcn11_CSTATE[0] += rtB.Sum_n;
+  // Derivatives for Integrator: '<S11>/Integrator'
+  _rtXdot->Integrator_CSTATE_k = rtB.vel_hy;
 
-  // Derivatives for TransferFcn: '<S4>/Transfer Fcn12'
-  _rtXdot->TransferFcn12_CSTATE[0] = -7.0 * rtX.TransferFcn12_CSTATE[1];
-  _rtXdot->TransferFcn12_CSTATE[0] -= rtX.TransferFcn12_CSTATE[2];
-  _rtXdot->TransferFcn12_CSTATE[1] = rtX.TransferFcn12_CSTATE[0];
-  _rtXdot->TransferFcn12_CSTATE[2] = rtX.TransferFcn12_CSTATE[1];
-  _rtXdot->TransferFcn12_CSTATE[0] += rtB.Sum_o;
+  // Derivatives for Integrator: '<S12>/Integrator'
+  _rtXdot->Integrator_CSTATE_gj = rtB.vel_p;
 
-  // Derivatives for Integrator: '<S141>/Filter'
+  // Derivatives for Integrator: '<S48>/Filter'
   _rtXdot->Filter_CSTATE = rtB.FilterCoefficient;
 
-  // Derivatives for Integrator: '<S146>/Integrator'
-  _rtXdot->Integrator_CSTATE = rtB.IntegralGain;
+  // Derivatives for Integrator: '<S53>/Integrator'
+  _rtXdot->Integrator_CSTATE_m = rtB.IntegralGain;
 
-  // Derivatives for Integrator: '<S189>/Filter'
-  _rtXdot->Filter_CSTATE_k = rtB.FilterCoefficient_l;
+  // Derivatives for Integrator: '<S99>/Filter'
+  _rtXdot->Filter_CSTATE_a = rtB.FilterCoefficient_c;
 
-  // Derivatives for Integrator: '<S194>/Integrator'
-  _rtXdot->Integrator_CSTATE_d = rtB.IntegralGain_o;
+  // Derivatives for Integrator: '<S104>/Integrator'
+  _rtXdot->Integrator_CSTATE_j = rtB.IntegralGain_f;
 
-  // Derivatives for Integrator: '<S237>/Filter'
-  _rtXdot->Filter_CSTATE_j = rtB.FilterCoefficient_f;
+  // Derivatives for Integrator: '<S150>/Filter'
+  _rtXdot->Filter_CSTATE_c = rtB.FilterCoefficient_cd;
 
-  // Derivatives for Integrator: '<S242>/Integrator'
-  _rtXdot->Integrator_CSTATE_f = rtB.IntegralGain_n;
+  // Derivatives for Integrator: '<S155>/Integrator'
+  _rtXdot->Integrator_CSTATE_a = rtB.IntegralGain_c;
 
-  // Derivatives for Integrator: '<S285>/Filter'
-  _rtXdot->Filter_CSTATE_c = rtB.FilterCoefficient_fr;
+  // Derivatives for Integrator: '<S201>/Filter'
+  _rtXdot->Filter_CSTATE_f = rtB.FilterCoefficient_m;
 
-  // Derivatives for Integrator: '<S290>/Integrator'
-  _rtXdot->Integrator_CSTATE_g = rtB.IntegralGain_a;
+  // Derivatives for Integrator: '<S206>/Integrator'
+  _rtXdot->Integrator_CSTATE_an = rtB.IntegralGain_l;
 
-  // Derivatives for Integrator: '<S45>/Filter'
-  _rtXdot->Filter_CSTATE_d = rtB.FilterCoefficient_b;
+  // Derivatives for Integrator: '<S252>/Filter'
+  _rtXdot->Filter_CSTATE_m = rtB.FilterCoefficient_d;
 
-  // Derivatives for Integrator: '<S50>/Integrator'
-  _rtXdot->Integrator_CSTATE_di = rtB.IntegralGain_os;
+  // Derivatives for Integrator: '<S257>/Integrator'
+  _rtXdot->Integrator_CSTATE_ji = rtB.IntegralGain_g;
 
-  // Derivatives for Integrator: '<S93>/Filter'
-  _rtXdot->Filter_CSTATE_i = rtB.FilterCoefficient_g;
+  // Derivatives for TransferFcn: '<S7>/trans func2'
+  _rtXdot->transfunc2_CSTATE[0] = -3.098 * rtX.transfunc2_CSTATE[0];
 
-  // Derivatives for Integrator: '<S98>/Integrator'
-  _rtXdot->Integrator_CSTATE_o = rtB.IntegralGain_i;
+  // Derivatives for TransferFcn: '<S8>/trans func2'
+  _rtXdot->transfunc2_CSTATE_o[0] = -3.098 * rtX.transfunc2_CSTATE_o[0];
+
+  // Derivatives for TransferFcn: '<S9>/trans func2'
+  _rtXdot->transfunc2_CSTATE_ow[0] = -3.098 * rtX.transfunc2_CSTATE_ow[0];
+
+  // Derivatives for TransferFcn: '<S10>/trans func2'
+  _rtXdot->transfunc2_CSTATE_c[0] = -3.098 * rtX.transfunc2_CSTATE_c[0];
+
+  // Derivatives for TransferFcn: '<S11>/trans func2'
+  _rtXdot->transfunc2_CSTATE_j[0] = -3.098 * rtX.transfunc2_CSTATE_j[0];
+
+  // Derivatives for TransferFcn: '<S12>/trans func2'
+  _rtXdot->transfunc2_CSTATE_k[0] = -3.098 * rtX.transfunc2_CSTATE_k[0];
+
+  // Derivatives for TransferFcn: '<S7>/trans func2'
+  _rtXdot->transfunc2_CSTATE[0] += -56.11 * rtX.transfunc2_CSTATE[1];
+
+  // Derivatives for TransferFcn: '<S8>/trans func2'
+  _rtXdot->transfunc2_CSTATE_o[0] += -56.11 * rtX.transfunc2_CSTATE_o[1];
+
+  // Derivatives for TransferFcn: '<S9>/trans func2'
+  _rtXdot->transfunc2_CSTATE_ow[0] += -56.11 * rtX.transfunc2_CSTATE_ow[1];
+
+  // Derivatives for TransferFcn: '<S10>/trans func2'
+  _rtXdot->transfunc2_CSTATE_c[0] += -56.11 * rtX.transfunc2_CSTATE_c[1];
+
+  // Derivatives for TransferFcn: '<S11>/trans func2'
+  _rtXdot->transfunc2_CSTATE_j[0] += -56.11 * rtX.transfunc2_CSTATE_j[1];
+
+  // Derivatives for TransferFcn: '<S12>/trans func2'
+  _rtXdot->transfunc2_CSTATE_k[0] += -56.11 * rtX.transfunc2_CSTATE_k[1];
+
+  // Derivatives for TransferFcn: '<S7>/trans func2'
+  _rtXdot->transfunc2_CSTATE[1] = rtX.transfunc2_CSTATE[0];
+  _rtXdot->transfunc2_CSTATE[0] += rtB.Sum;
+
+  // Derivatives for TransferFcn: '<S8>/trans func2'
+  _rtXdot->transfunc2_CSTATE_o[1] = rtX.transfunc2_CSTATE_o[0];
+  _rtXdot->transfunc2_CSTATE_o[0] += rtB.Sum_b;
+
+  // Derivatives for TransferFcn: '<S9>/trans func2'
+  _rtXdot->transfunc2_CSTATE_ow[1] = rtX.transfunc2_CSTATE_ow[0];
+  _rtXdot->transfunc2_CSTATE_ow[0] += rtB.Sum_k;
+
+  // Derivatives for TransferFcn: '<S10>/trans func2'
+  _rtXdot->transfunc2_CSTATE_c[1] = rtX.transfunc2_CSTATE_c[0];
+  _rtXdot->transfunc2_CSTATE_c[0] += rtB.Sum_j;
+
+  // Derivatives for TransferFcn: '<S11>/trans func2'
+  _rtXdot->transfunc2_CSTATE_j[1] = rtX.transfunc2_CSTATE_j[0];
+  _rtXdot->transfunc2_CSTATE_j[0] += rtB.Sum_m;
+
+  // Derivatives for TransferFcn: '<S12>/trans func2'
+  _rtXdot->transfunc2_CSTATE_k[1] = rtX.transfunc2_CSTATE_k[0];
+  _rtXdot->transfunc2_CSTATE_k[0] += rtB.Sum_h;
+
+  // Derivatives for Integrator: '<S303>/Filter'
+  _rtXdot->Filter_CSTATE_n = rtB.FilterCoefficient_b;
+
+  // Derivatives for Integrator: '<S308>/Integrator'
+  _rtXdot->Integrator_CSTATE_f = rtB.IntegralGain_m;
 }
 
 // Model initialize function
@@ -2583,95 +2733,95 @@ void URController::initialize()
   rtmSetTPtr((&rtM), &(&rtM)->Timing.tArray[0]);
   (&rtM)->Timing.stepSize0 = 0.001;
 
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn7'
-  rtX.TransferFcn7_CSTATE[0] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn8'
-  rtX.TransferFcn8_CSTATE[0] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn9'
-  rtX.TransferFcn9_CSTATE[0] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn10'
-  rtX.TransferFcn10_CSTATE[0] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn11'
-  rtX.TransferFcn11_CSTATE[0] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn12'
-  rtX.TransferFcn12_CSTATE[0] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn7'
-  rtX.TransferFcn7_CSTATE[1] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn8'
-  rtX.TransferFcn8_CSTATE[1] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn9'
-  rtX.TransferFcn9_CSTATE[1] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn10'
-  rtX.TransferFcn10_CSTATE[1] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn11'
-  rtX.TransferFcn11_CSTATE[1] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn12'
-  rtX.TransferFcn12_CSTATE[1] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn7'
-  rtX.TransferFcn7_CSTATE[2] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn8'
-  rtX.TransferFcn8_CSTATE[2] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn9'
-  rtX.TransferFcn9_CSTATE[2] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn10'
-  rtX.TransferFcn10_CSTATE[2] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn11'
-  rtX.TransferFcn11_CSTATE[2] = 0.0;
-
-  // InitializeConditions for TransferFcn: '<S4>/Transfer Fcn12'
-  rtX.TransferFcn12_CSTATE[2] = 0.0;
-
-  // InitializeConditions for Integrator: '<S141>/Filter'
-  rtX.Filter_CSTATE = 0.0;
-
-  // InitializeConditions for Integrator: '<S146>/Integrator'
+  // InitializeConditions for Integrator: '<S7>/Integrator'
   rtX.Integrator_CSTATE = 0.0;
 
-  // InitializeConditions for Integrator: '<S189>/Filter'
-  rtX.Filter_CSTATE_k = 0.0;
-
-  // InitializeConditions for Integrator: '<S194>/Integrator'
-  rtX.Integrator_CSTATE_d = 0.0;
-
-  // InitializeConditions for Integrator: '<S237>/Filter'
-  rtX.Filter_CSTATE_j = 0.0;
-
-  // InitializeConditions for Integrator: '<S242>/Integrator'
-  rtX.Integrator_CSTATE_f = 0.0;
-
-  // InitializeConditions for Integrator: '<S285>/Filter'
-  rtX.Filter_CSTATE_c = 0.0;
-
-  // InitializeConditions for Integrator: '<S290>/Integrator'
+  // InitializeConditions for Integrator: '<S8>/Integrator'
   rtX.Integrator_CSTATE_g = 0.0;
 
-  // InitializeConditions for Integrator: '<S45>/Filter'
-  rtX.Filter_CSTATE_d = 0.0;
-
-  // InitializeConditions for Integrator: '<S50>/Integrator'
-  rtX.Integrator_CSTATE_di = 0.0;
-
-  // InitializeConditions for Integrator: '<S93>/Filter'
-  rtX.Filter_CSTATE_i = 0.0;
-
-  // InitializeConditions for Integrator: '<S98>/Integrator'
+  // InitializeConditions for Integrator: '<S9>/Integrator'
   rtX.Integrator_CSTATE_o = 0.0;
+
+  // InitializeConditions for Integrator: '<S10>/Integrator'
+  rtX.Integrator_CSTATE_c = 0.0;
+
+  // InitializeConditions for Integrator: '<S11>/Integrator'
+  rtX.Integrator_CSTATE_k = 0.0;
+
+  // InitializeConditions for Integrator: '<S12>/Integrator'
+  rtX.Integrator_CSTATE_gj = 0.0;
+
+  // InitializeConditions for Integrator: '<S48>/Filter'
+  rtX.Filter_CSTATE = 0.0;
+
+  // InitializeConditions for Integrator: '<S53>/Integrator'
+  rtX.Integrator_CSTATE_m = 0.0;
+
+  // InitializeConditions for Integrator: '<S99>/Filter'
+  rtX.Filter_CSTATE_a = 0.0;
+
+  // InitializeConditions for Integrator: '<S104>/Integrator'
+  rtX.Integrator_CSTATE_j = 0.0;
+
+  // InitializeConditions for Integrator: '<S150>/Filter'
+  rtX.Filter_CSTATE_c = 0.0;
+
+  // InitializeConditions for Integrator: '<S155>/Integrator'
+  rtX.Integrator_CSTATE_a = 0.0;
+
+  // InitializeConditions for Integrator: '<S201>/Filter'
+  rtX.Filter_CSTATE_f = 0.0;
+
+  // InitializeConditions for Integrator: '<S206>/Integrator'
+  rtX.Integrator_CSTATE_an = 0.0;
+
+  // InitializeConditions for Integrator: '<S252>/Filter'
+  rtX.Filter_CSTATE_m = 0.0;
+
+  // InitializeConditions for Integrator: '<S257>/Integrator'
+  rtX.Integrator_CSTATE_ji = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S7>/trans func2'
+  rtX.transfunc2_CSTATE[0] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S8>/trans func2'
+  rtX.transfunc2_CSTATE_o[0] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S9>/trans func2'
+  rtX.transfunc2_CSTATE_ow[0] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S10>/trans func2'
+  rtX.transfunc2_CSTATE_c[0] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S11>/trans func2'
+  rtX.transfunc2_CSTATE_j[0] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S12>/trans func2'
+  rtX.transfunc2_CSTATE_k[0] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S7>/trans func2'
+  rtX.transfunc2_CSTATE[1] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S8>/trans func2'
+  rtX.transfunc2_CSTATE_o[1] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S9>/trans func2'
+  rtX.transfunc2_CSTATE_ow[1] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S10>/trans func2'
+  rtX.transfunc2_CSTATE_c[1] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S11>/trans func2'
+  rtX.transfunc2_CSTATE_j[1] = 0.0;
+
+  // InitializeConditions for TransferFcn: '<S12>/trans func2'
+  rtX.transfunc2_CSTATE_k[1] = 0.0;
+
+  // InitializeConditions for Integrator: '<S303>/Filter'
+  rtX.Filter_CSTATE_n = 0.0;
+
+  // InitializeConditions for Integrator: '<S308>/Integrator'
+  rtX.Integrator_CSTATE_f = 0.0;
 }
 
 // Model terminate function

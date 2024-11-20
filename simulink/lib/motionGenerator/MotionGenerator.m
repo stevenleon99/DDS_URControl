@@ -29,7 +29,7 @@ classdef MotionGenerator  < handle % matlab.System
         deltaTime = 0;
         
         signM = 1;      % 1 = positive change, -1 = negative change
-        shape = 0;      % 1 = trapezoidal, 0 = triangular
+        shape = 1;      % 1 = trapezoidal, 0 = triangular
         
     end
     
