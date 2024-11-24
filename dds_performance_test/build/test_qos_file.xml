@@ -42,9 +42,10 @@
             file is in the working directory when running the example.
         -->
         <qos_profile name="hello_world_Profile" 
-                     base_name="BuiltinQosLib::Pattern.Streaming"
+                     base_name="BuiltinQosLib::Generic.StrictReliable"
                      is_default_qos="true">
             
+            <!-- base_name="BuiltinQosLib::Pattern.Streaming" -->
             <!-- QoS specified to override the QoS in the base profile.
                  Configures the DataWriter in the example code. -->
             <datawriter_qos>
@@ -72,7 +73,16 @@
                 <participant_name>
                     <name>DDSTestParticipant</name>
                 </participant_name>
-
+                <discovery>
+                    <!-- disable the reception multicast for discovery -->
+                    <multicast_receive_addresses/>
+                    <initial_peers>
+                        <element>builtin.shmem://</element>
+                        <element>builtin.udpv4://127.0.0.1</element>
+                        <element>builtin.udpv4://192.168.0.21</element>
+                        <element>builtin.udpv4://192.168.0.20</element>
+                    </initial_peers>
+                </discovery>
             </domain_participant_qos>
         </qos_profile>
 

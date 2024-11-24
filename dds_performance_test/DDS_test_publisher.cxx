@@ -33,7 +33,7 @@ static const DDS_UnsignedLong SEC_to_NANOSEC = 1000000000UL;
 
 std::string readFile(){
 
-    std::ifstream file("../resource/1M_test.txt");  // Open the file in read mode
+    std::ifstream file("../resource/128b_test.txt");  // Open the file in read mode
 
     if (!file.is_open()) {  // Check if the file opened successfully
         std::cerr << "Unable to open file";
@@ -76,8 +76,10 @@ void run_example(unsigned int domain_id,
     // A DomainParticipant allows an application to begin communicating in
     // a DDS domain. Typically there is one DomainParticipant per application.
     // DomainParticipant QoS is configured in USER_QOS_PROFILES.xml
-    dds::domain::DomainParticipant participant(domain_id);
-
+    dds::core::QosProvider qos_provider("test_qos_file.xml");
+    dds::domain::DomainParticipant participant(domain_id, 
+                                               qos_provider.participant_qos(
+                                               "DDSTest_Library::hello_world_Profile"));
     // A Topic has a name and a datatype. Create a Topic named
     // "HelloWorld Topic" with type HelloWorld
     dds::topic::Topic<DDSTestMessage> topic(participant, topic_write);

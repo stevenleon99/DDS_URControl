@@ -104,7 +104,10 @@ void run_example(unsigned int domain_id,
     // A DomainParticipant allows an application to begin communicating in
     // a DDS domain. Typically there is one DomainParticipant per application.
     // Create a DomainParticipant with default Qos
-    dds::domain::DomainParticipant participant(domain_id);
+    dds::core::QosProvider qos_provider("test_qos_file.xml");
+    dds::domain::DomainParticipant participant(domain_id, 
+                                               qos_provider.participant_qos(
+                                               "DDSTest_Library::hello_world_Profile"));
 
     // A Topic has a name and a datatype. Create a Topic named
     // "HelloWorld Topic" with type HelloWorld

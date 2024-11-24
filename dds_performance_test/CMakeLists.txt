@@ -10,10 +10,10 @@ set(CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/../resources/cmake"
 )
 message(STATUS "CMAKE_MODULE_PATH: " ${CMAKE_MODULE_PATH})
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR: " ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Include ConnextDdsAddExample.cmake from resources/cmake
 include(ConnextDdsAddExample)
-
 
 connextdds_add_example(
     IDL "DDS_test"
