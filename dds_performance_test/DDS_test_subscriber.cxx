@@ -27,10 +27,12 @@
 // write data to file
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 
 using namespace application;
 using Time = dds::core::Time;
+using namespace std::chrono;
 
 static const DDS_UnsignedLong USEC_to_NANOSEC = 1000UL;
 static const DDS_UnsignedLong SEC_to_NANOSEC = 1000000000UL;
@@ -69,23 +71,29 @@ unsigned int process_data(dds::sub::DataReader<DDSTestMessage>& reader,
     
     unsigned int samples_read = 0;
     dds::sub::LoanedSamples<DDSTestMessage> samples = reader.take();
-    auto time = getDDSTimeofday();
     DDSTestMessage sample_w;
 
     for (const auto& sample : samples) {
         if (sample.info().valid()) {
             samples_read++;
-            DDS_UnsignedLong preTime = sample.data().timestamp();
-            DDS_UnsignedLong curTime = time.nanosec()+time.sec()*SEC_to_NANOSEC;
+            double preTime = sample.data().timestamp();
+            auto time = getDDSTimeofday();
+            // double curTime = time.nanosec()+(time.sec()%100)*SEC_to_NANOSEC;
+            // std::cout << "time now: " << "sec: " << time.sec() << "nano: " << time.nanosec() << std::endl;
 
+            std::cout << "count: " << sample.data().count() << std::endl;
+            auto now = high_resolution_clock::now().time_since_epoch();
+            double curTime = duration_cast<nanoseconds>(now).count();
             std::stringstream ss;
-            ss << "sec, " << time.sec() << ",nano, " \
-                << time.nanosec() << ",diff. ms," \
-                << std::to_string((curTime - preTime)/MSEC_to_NANOSEC) << "\n";
+            ss << "count, " << sample.data().count() \
+               << ",sec, " << time.sec() << ",nano, " \
+               << time.nanosec() << ",diff. ms," \
+               << std::to_string((curTime - preTime)/MSEC_to_NANOSEC) << "\n";
             writeFile(ss.str(), number_node);
 
             sample_w.timestamp(curTime);
             sample_w.msg(sample.data().msg());
+            sample_w.count(sample.data().count());
             writer.write(sample_w);
         }
     }

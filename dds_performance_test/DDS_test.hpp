@@ -10,8 +10,8 @@ For more information, type 'rtiddsgen -help' at a command shell
 or consult the Code Generator User's Manual.
 */
 
-#ifndef DDS_test_1934069329_hpp
-#define DDS_test_1934069329_hpp
+#ifndef DDS_test_1934069347_hpp
+#define DDS_test_1934069347_hpp
 
 #include <iosfwd>
 
@@ -68,17 +68,30 @@ class NDDSUSERDllExport DDSTestMessage {
 
     DDSTestMessage();
 
-    DDSTestMessage(uint64_t timestamp_,const std::string& msg_);
+    DDSTestMessage(uint64_t count_,double timestamp_,const std::string& msg_);
 
-    uint64_t& timestamp() noexcept {
+    uint64_t& count() noexcept {
+        return m_count_;
+    }
+
+    const uint64_t& count() const noexcept {
+        return m_count_;
+    }
+
+    void count(uint64_t value) {
+
+        m_count_ = value;
+    }
+
+    double& timestamp() noexcept {
         return m_timestamp_;
     }
 
-    const uint64_t& timestamp() const noexcept {
+    const double& timestamp() const noexcept {
         return m_timestamp_;
     }
 
-    void timestamp(uint64_t value) {
+    void timestamp(double value) {
 
         m_timestamp_ = value;
     }
@@ -106,7 +119,8 @@ class NDDSUSERDllExport DDSTestMessage {
 
   private:
 
-    uint64_t m_timestamp_;
+    uint64_t m_count_;
+    double m_timestamp_;
     std::string m_msg_;
 
 };
@@ -197,5 +211,5 @@ namespace rti {
 #define NDDSUSERDllExport
 #endif
 
-#endif // DDS_test_1934069329_hpp
+#endif // DDS_test_1934069347_hpp
 

@@ -25,3 +25,10 @@ connextdds_add_example(
     QOS_FILENAME "test_qos_file.xml"
 )
 
+# Path to your shell script
+set(SCRIPT_NAME "/home/steve/rticonnextdds-getting-started/DDS_URControl/dds_performance_test/script/run_computer1.sh"
+                "/home/steve/rticonnextdds-getting-started/DDS_URControl/dds_performance_test/script/run_computer2.sh")
+
+# Install the shell script to the "bin" directory
+install(FILES ${SCRIPT_NAME} DESTINATION ${CMAKE_BINARY_DIR} PERMISSIONS OWNER_EXECUTE OWNER_READ GROUP_EXECUTE WORLD_EXECUTE)
+

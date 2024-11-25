@@ -24,8 +24,10 @@
 
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 using namespace application;
+using namespace std::chrono;
 using Time = dds::core::Time;
 
 static const DDS_UnsignedLong USEC_to_NANOSEC = 1000UL;
@@ -33,7 +35,7 @@ static const DDS_UnsignedLong SEC_to_NANOSEC = 1000000000UL;
 
 std::string readFile(){
 
-    std::ifstream file("../resource/128b_test.txt");  // Open the file in read mode
+    std::ifstream file("../resource/1400b_test.txt");  // Open the file in read mode
 
     if (!file.is_open()) {  // Check if the file opened successfully
         std::cerr << "Unable to open file";
@@ -99,14 +101,19 @@ void run_example(unsigned int domain_id,
     for (unsigned int count = 0;
          !shutdown_requested && count < sample_count;
          count++) {
-        
         std::cout << "Writing HelloWorld, count " << count << std::endl;
-        auto time = getDDSTimeofday();
-        std::cout << "sec: " << time.sec() << " nano: " << time.nanosec() << std::endl;
+        // auto time = getDDSTimeofday();
+        // std::cout << "sec: " << time.sec() << " nano: " << time.nanosec() << std::endl;
+        // sample.timestamp(time.nanosec()+(time.sec()%100)*SEC_to_NANOSEC);
 
-        sample.timestamp(time.nanosec()+time.sec()*SEC_to_NANOSEC);
+        auto now = high_resolution_clock::now().time_since_epoch();
+        auto timestamp = duration_cast<nanoseconds>(now).count();
+        std::cout << "timestamp(ns): " << timestamp << std::endl;
+        sample.timestamp(timestamp);
+        
         // sample.msg("Hello world! " + std::to_string(time.nanosec()));
         sample.msg(readFile());
+        sample.count(count);
         writer.write(sample);
         
         rti::util::sleep(dds::core::Duration(1/hertz));

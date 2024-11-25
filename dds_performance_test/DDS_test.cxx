@@ -12,6 +12,8 @@ or consult the Code Generator User's Manual.
 
 #include <iosfwd>
 #include <iomanip>
+#include <cmath>
+#include <limits>
 
 #ifndef NDDS_STANDALONE_TYPE
 #include "rti/topic/cdr/Serialization.hpp"
@@ -27,12 +29,14 @@ or consult the Code Generator User's Manual.
 // ---- DDSTestMessage: 
 
 DDSTestMessage::DDSTestMessage() :
-    m_timestamp_ (0ull) ,
+    m_count_ (0ull) ,
+    m_timestamp_ (0.0) ,
     m_msg_ ("")  {
 
 }   
 
-DDSTestMessage::DDSTestMessage (uint64_t timestamp_,const std::string& msg_):
+DDSTestMessage::DDSTestMessage (uint64_t count_,double timestamp_,const std::string& msg_):
+    m_count_(count_), 
     m_timestamp_(timestamp_), 
     m_msg_(msg_) {
 }
@@ -40,12 +44,17 @@ DDSTestMessage::DDSTestMessage (uint64_t timestamp_,const std::string& msg_):
 void DDSTestMessage::swap(DDSTestMessage& other_)  noexcept 
 {
     using std::swap;
+    swap(m_count_, other_.m_count_);
     swap(m_timestamp_, other_.m_timestamp_);
     swap(m_msg_, other_.m_msg_);
 }  
 
 bool DDSTestMessage::operator == (const DDSTestMessage& other_) const {
-    if (m_timestamp_ != other_.m_timestamp_) {
+    if (m_count_ != other_.m_count_) {
+        return false;
+    }
+    if (std::fabs(m_timestamp_ - other_.m_timestamp_) > std::numeric_limits< double>::epsilon()
+    && !(std::fabs(m_timestamp_ - other_.m_timestamp_) < (std::numeric_limits< double>::min)())) {
         return false;
     }
     if (m_msg_ != other_.m_msg_) {
@@ -62,7 +71,8 @@ std::ostream& operator << (std::ostream& o,const DDSTestMessage& sample)
 {
     ::rti::util::StreamFlagSaver flag_saver (o);
     o <<"[";
-    o << "timestamp: " << sample.timestamp ()<<", ";
+    o << "count: " << sample.count ()<<", ";
+    o << "timestamp: " << std::setprecision(15) << sample.timestamp ()<<", ";
     o << "msg: " << sample.msg ();
     o <<"]";
     return o;
@@ -90,11 +100,11 @@ namespace rti {
 
                 static DDS_TypeCode DDSTestMessage_g_tc_msg_string;
 
-                static DDS_TypeCode_Member DDSTestMessage_g_tc_members[2]=
+                static DDS_TypeCode_Member DDSTestMessage_g_tc_members[3]=
                 {
 
                     {
-                        (char *)"timestamp",/* Member name */
+                        (char *)"count",/* Member name */
                         {
                             0,/* Representation ID */
                             DDS_BOOLEAN_FALSE,/* Is a pointer? */
@@ -112,9 +122,27 @@ namespace rti {
                         RTICdrTypeCodeAnnotations_INITIALIZER
                     }, 
                     {
-                        (char *)"msg",/* Member name */
+                        (char *)"timestamp",/* Member name */
                         {
                             1,/* Representation ID */
+                            DDS_BOOLEAN_FALSE,/* Is a pointer? */
+                            -1, /* Bitfield bits */
+                            NULL/* Member type code is assigned later */
+                        },
+                        0, /* Ignored */
+                        0, /* Ignored */
+                        0, /* Ignored */
+                        NULL, /* Ignored */
+                        RTI_CDR_REQUIRED_MEMBER, /* Is a key? */
+                        DDS_PUBLIC_MEMBER,/* Member visibility */
+                        1,
+                        NULL, /* Ignored */
+                        RTICdrTypeCodeAnnotations_INITIALIZER
+                    }, 
+                    {
+                        (char *)"msg",/* Member name */
+                        {
+                            2,/* Representation ID */
                             DDS_BOOLEAN_FALSE,/* Is a pointer? */
                             -1, /* Bitfield bits */
                             NULL/* Member type code is assigned later */
@@ -141,7 +169,7 @@ namespace rti {
                         0, /* Ignored */
                         0, /* Ignored */
                         NULL, /* Ignored */
-                        2, /* Number of members */
+                        3, /* Number of members */
                         DDSTestMessage_g_tc_members, /* Members */
                         DDS_VM_NONE, /* Ignored */
                         RTICdrTypeCodeAnnotations_INITIALIZER,
@@ -161,7 +189,8 @@ namespace rti {
                 DDSTestMessage_g_tc._data._annotations._allowedDataRepresentationMask = 5;
 
                 DDSTestMessage_g_tc_members[0]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_ulonglong;
-                DDSTestMessage_g_tc_members[1]._representation._typeCode = (RTICdrTypeCode *)&DDSTestMessage_g_tc_msg_string;
+                DDSTestMessage_g_tc_members[1]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_double;
+                DDSTestMessage_g_tc_members[2]._representation._typeCode = (RTICdrTypeCode *)&DDSTestMessage_g_tc_msg_string;
 
                 /* Initialize the values for member annotations. */
                 DDSTestMessage_g_tc_members[0]._annotations._defaultValue._d = RTI_XCDR_TK_ULONGLONG;
@@ -170,8 +199,14 @@ namespace rti {
                 DDSTestMessage_g_tc_members[0]._annotations._minValue._u.ulong_long_value = RTIXCdrUnsignedLongLong_MIN;
                 DDSTestMessage_g_tc_members[0]._annotations._maxValue._d = RTI_XCDR_TK_ULONGLONG;
                 DDSTestMessage_g_tc_members[0]._annotations._maxValue._u.ulong_long_value = RTIXCdrUnsignedLongLong_MAX;
-                DDSTestMessage_g_tc_members[1]._annotations._defaultValue._d = RTI_XCDR_TK_STRING;
-                DDSTestMessage_g_tc_members[1]._annotations._defaultValue._u.string_value = (DDS_Char *) "";
+                DDSTestMessage_g_tc_members[1]._annotations._defaultValue._d = RTI_XCDR_TK_DOUBLE;
+                DDSTestMessage_g_tc_members[1]._annotations._defaultValue._u.double_value = 0.0;
+                DDSTestMessage_g_tc_members[1]._annotations._minValue._d = RTI_XCDR_TK_DOUBLE;
+                DDSTestMessage_g_tc_members[1]._annotations._minValue._u.double_value = RTIXCdrDouble_MIN;
+                DDSTestMessage_g_tc_members[1]._annotations._maxValue._d = RTI_XCDR_TK_DOUBLE;
+                DDSTestMessage_g_tc_members[1]._annotations._maxValue._u.double_value = RTIXCdrDouble_MAX;
+                DDSTestMessage_g_tc_members[2]._annotations._defaultValue._d = RTI_XCDR_TK_STRING;
+                DDSTestMessage_g_tc_members[2]._annotations._defaultValue._u.string_value = (DDS_Char *) "";
 
                 DDSTestMessage_g_tc._data._sampleAccessInfo = sample_access_info();
                 DDSTestMessage_g_tc._data._typePlugin = type_plugin_info();    
@@ -185,7 +220,7 @@ namespace rti {
 
                 ::DDSTestMessage *sample;
 
-                static RTIXCdrMemberAccessInfo DDSTestMessage_g_memberAccessInfos[2] =
+                static RTIXCdrMemberAccessInfo DDSTestMessage_g_memberAccessInfos[3] =
                 {RTIXCdrMemberAccessInfo_INITIALIZER};
 
                 static RTIXCdrSampleAccessInfo DDSTestMessage_g_sampleAccessInfo = 
@@ -203,9 +238,12 @@ namespace rti {
                 }
 
                 DDSTestMessage_g_memberAccessInfos[0].bindingMemberValueOffset[0] = 
-                (RTIXCdrUnsignedLong) ((char *)&sample->timestamp() - (char *)sample);
+                (RTIXCdrUnsignedLong) ((char *)&sample->count() - (char *)sample);
 
                 DDSTestMessage_g_memberAccessInfos[1].bindingMemberValueOffset[0] = 
+                (RTIXCdrUnsignedLong) ((char *)&sample->timestamp() - (char *)sample);
+
+                DDSTestMessage_g_memberAccessInfos[2].bindingMemberValueOffset[0] = 
                 (RTIXCdrUnsignedLong) ((char *)&sample->msg() - (char *)sample);
 
                 DDSTestMessage_g_sampleAccessInfo.memberAccessInfos = 
@@ -328,7 +366,8 @@ namespace dds {
 
         void topic_type_support< ::DDSTestMessage >::reset_sample(::DDSTestMessage& sample) 
         {
-            sample.timestamp(0ull);
+            sample.count(0ull);
+            sample.timestamp(0.0);
             sample.msg("");
         }
 

@@ -52,6 +52,9 @@
                 <publication_name>
                     <name>DDSTestDataWriter</name>
                 </publication_name>
+                <history>
+                    <depth>1</depth>
+                </history>
             </datawriter_qos>
 
             <!-- QoS specified to override the QoS in the base profile. 
@@ -60,6 +63,9 @@
                 <subscription_name>
                     <name>DDSTestDataReader</name>
                 </subscription_name>
+                <history>
+                    <depth>1</depth>
+                </history>
             </datareader_qos>
 
             <!-- QoS specified to override the QoS in the base profile. 
