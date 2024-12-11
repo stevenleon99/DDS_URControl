@@ -13,5 +13,8 @@ This project simulates the control and communication of UR5 robotic arm with RTI
 - add FK position data to shmio
 - add simulink files
 
-<video src='resources/doc/gui_demo1.mp4'></video>
-<video src='resources/doc/gui_demo2.mp4'></video>
+
+
+https://github.com/user-attachments/assets/3f83c133-713c-46f1-a6b4-3c71242438c3
+https://github.com/user-attachments/assets/5def0997-e070-4973-8a81-fb073034b8cc
+
