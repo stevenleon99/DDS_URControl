@@ -1,0 +1,109 @@
+%% Copyright 2024 Covidien LP.
+%% All Rights Reserved. The information contained herein is confidential
+%% property of Covidien. The use, copying, transfer or disclosure of such
+%% information is prohibited except by written agreement with Covidien.
+
+%implements "ddsUpsCommandPub" "C"
+
+%function BlockTypeSetup(block, system) Output
+    %openfile buffer
+    #include <cassert>
+    #include <cstdint>
+    #include <iostream>
+    #include <string>
+    #include <vector>
+
+    #include "einstein/communication/DdsValue.h"
+    #include "einstein/communication/Interface.h"
+    #include "einstein/matlab/communication/CommunicationFactory.h"
+    #include "einstein/utility/CastPointer.h"
+    #include "SimulinkDdsWriterContext.h"
+
+    #include "einstein/ups/communication/sf/ups_if.h"
+
+    %closefile buffer
+    %<LibCacheIncludes(buffer)>
+%endfunction
+
+%function Start(block, system) Output
+try
+{
+    using Data = einstein::ups::communication::UpsCommandTopic::Value::Dds;
+    %assign dds_context_ptr = LibBlockDWorkAddr(DWork[0], "", "", 0)
+    %assign dds_context_ptr_part_two = LibBlockDWorkAddr(DWork[0], "", "", 1)
+    //assert we have a continuous dwork storage available
+    assert((reinterpret_cast<std::size_t>(%<dds_context_ptr>) + 4) == reinterpret_cast<std::size_t>(%<dds_context_ptr_part_two>));
+    //initialize to nullptr, as we can only instantiate once we have input port data
+    using Writer = einstein::communication::Writer<Data>;
+    auto context = new SimulinkDdsWriterContext<Writer, Data>();
+    einstein::utility::AssignToUIntPointer(context, reinterpret_cast<std::size_t *>(%<dds_context_ptr>));
+    einstein::rtw_target::DdsWriterRegistry::getInstance().registerWriter(context);
+
+    std::cout << "Initializing dds pub block for UpsCommand" << std::endl;
+}
+catch (const std::exception & error)
+{
+    std::cerr << "Exception during UpsCommandPub block setup " << error.what() << std::endl;
+}
+%endfunction
+
+%function Outputs (block, system) Output
+try
+{
+    using Topic = einstein::ups::communication::UpsCommandTopic;
+    using Data = Topic::Value::Dds;
+    using Writer = einstein::communication::Writer<Data>;
+
+    %assign dds_context_ptr = LibBlockDWorkAddr(DWork[0], "", "", 0)
+
+    auto dds_context =
+            einstein::utility::FromUIntPointer<SimulinkDdsWriterContext<Writer, Data>>(
+                reinterpret_cast<std::size_t *>(%<dds_context_ptr>));
+    %assign subsystem_id = LibBlockInputSignal(0, "", "", 0)
+    if(dds_context->writer == nullptr) //this is the first run
+    {
+        std::cout << "Instantiating writer for dds pub block for UpsCommand" << std::endl;
+        using Factory = einstein::matlab::communication::CommunicationFactory;
+        dds_context->writer = Factory::getInstance(11, %<subsystem_id>)->getWriter<Topic>();
+    }
+    %assign send = LibBlockInputSignal(1, "", "", 0)
+    if (%<send>)
+    {
+    %assign value = LibBlockInputSignal(2, "", "", 0)
+    dds_context->data->ups_type() = static_cast<einstein::ups::communication::dds::UpsTypeEnum::inner_enum>(%<value>);
+
+        dds_context->queueWrite();
+
+        ++(dds_context->last_message_timestamp_ns);
+        dds_context->message_age_ticks = 0;
+    }
+    if (dds_context->message_age_ticks < dds_context->MESSAGE_AGE_MAX)
+    {
+        ++(dds_context->message_age_ticks);
+    }
+    %<LibBlockOutputSignal(0, "", "", 0)> = dds_context->last_message_timestamp_ns;
+    %<LibBlockOutputSignal(0, "", "", 1)> = dds_context->message_age_ticks;
+}
+catch (const std::exception & error)
+{
+    std::cerr << "Exception during UpsCommandPub block step function " << error.what() << std::endl;
+}
+%endfunction
+
+%function Terminate(block, system) Output
+try
+{
+    using Data = einstein::ups::communication::UpsCommandTopic::Value::Dds;
+    %assign dds_context_ptr = LibBlockDWorkAddr(DWork[0], "", "", 0)
+    using Writer = einstein::communication::Writer<Data>;
+    auto dds_context =
+            einstein::utility::FromUIntPointer<SimulinkDdsWriterContext<Writer, Data>>(
+                reinterpret_cast<std::size_t *>(%<dds_context_ptr>));
+    delete dds_context;
+    std::cout << "Terminating dds pub block for UpsCommand" << std::endl;
+}
+catch (const std::exception & error)
+{
+    std::cerr << "Exception during UpsCommandPub block terminate function " << error.what() << std::endl;
+}
+%endfunction
